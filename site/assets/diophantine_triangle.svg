@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 550" role="img" aria-labelledby="title desc">
+<title id="title">Diophantine parameter triangle</title>
+<desc id="desc">The parameter domain alpha greater than zero, beta greater than zero, alpha plus beta less than one; an orange diagonal beta equals alpha illustrates the hollow matrix shift. Thin lines show possible affine singularity conditions beta equals N alpha minus m.</desc>
+<defs>
+<linearGradient id="surface" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#103846"/><stop offset="1" stop-color="#122a37"/></linearGradient>
+<clipPath id="triangle"><path d="M140 432 L580 432 L140 120 Z"/></clipPath>
+</defs>
+<rect width="960" height="550" rx="22" fill="url(#surface)"/>
+<text x="44" y="48" fill="#F9D7A7" font-size="14" font-family="sans-serif" font-weight="700" letter-spacing="2">PARAMETER SPACE</text>
+<text x="44" y="77" fill="#ECF3E9" font-size="25" font-family="Georgia,serif">The open Diophantine triangle</text>
+<path d="M140 432 L580 432 L140 120 Z" fill="#2a6367" fill-opacity="0.52" stroke="#8ed1c2" stroke-width="2.2"/>
+<g stroke="#c1d6ce" stroke-opacity=".28" stroke-width="1.1" clip-path="url(#triangle)">
+<path d="M 140 432 L 580 76 M 140 432 L 580 -100 M 140 432 L 580 254"/>
+<path d="M 140 555 L 580 -157 M 140 660 L 580 -52"/>
+</g>
+<g clip-path="url(#triangle)" stroke="#f7b879" stroke-width="4.5" stroke-linecap="round"><path d="M140 432 L360 276"/></g>
+<g fill="#f5f0e7" font-family="sans-serif" font-size="17">
+<text x="127" y="463" text-anchor="end">0</text><text x="582" y="461" text-anchor="middle">1</text><text x="114" y="127" text-anchor="end">1</text>
+<text x="365" y="481" text-anchor="middle" font-size="19" font-style="italic">α</text><text x="94" y="252" font-size="19" font-style="italic">β</text>
+</g>
+<path d="M116 432 H618" stroke="#bfd6d4" stroke-width="2.2"/>
+<path d="M140 455 V108" stroke="#bfd6d4" stroke-width="2.2"/>
+<path d="M611 424 L621 432 L611 440 M132 118 L140 108 L148 118" fill="none" stroke="#bfd6d4" stroke-width="2.2"/>
+<g font-family="sans-serif" fill="#eef2e9">
+<text x="435" y="162" font-size="19" font-weight="700">β = α</text>
+<text x="435" y="188" font-size="14" fill="#fac38a">the hollow resonance</text>
+<path d="M420 184 L346 283" stroke="#eabf8a" stroke-width="1.5" fill="none"/>
+<text x="640" y="150" font-size="19" font-weight="700">Interior parameters</text>
+<text x="640" y="181" font-size="16">α &gt; 0</text>
+<text x="640" y="210" font-size="16">β &gt; 0</text>
+<text x="640" y="239" font-size="16">α + β &lt; 1</text>
+<rect x="640" y="272" width="252" height="127" rx="13" fill="#f9f3e9"/>
+<text x="658" y="302" fill="#153d49" font-size="13" font-weight="700" letter-spacing="1.1">EXACT SINGULARITY</text>
+<text x="658" y="338" fill="#153d49" font-size="19">Nα − β ∈ ℤ</text>
+<text x="658" y="369" fill="#51636b" font-size="13">Affine lines form the</text>
+<text x="658" y="389" fill="#51636b" font-size="13">singularity web.</text>
+</g>
+<text x="45" y="522" fill="#c2d1ce" font-family="sans-serif" font-size="13">Schematic · axes are not to scale for spectral or conditioning magnitudes</text>
+</svg>

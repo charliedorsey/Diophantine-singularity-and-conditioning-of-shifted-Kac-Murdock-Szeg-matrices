@@ -1,0 +1,7 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+This notice identifies the license; the official legal code at the URL above
+governs. The paper is separately archived under CC BY 4.0 at
+https://doi.org/10.5281/zenodo.23486307.

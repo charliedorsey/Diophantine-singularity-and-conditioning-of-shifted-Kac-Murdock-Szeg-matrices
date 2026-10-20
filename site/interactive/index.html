@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#171416" id="themeColor" data-theme-color>
+<title>One sine, two numbers — a companion to the shifted KMS paper</title>
+<meta name="description" id="metaDesc" content="A draggable companion to ‘Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices’: the target triangle, the affine singularity web, and the five-regime conditioning law, computed live.">
+<!-- Local offline edition. The original online version remains at charliedorsey.com. -->
+<script>
+(() => {
+  const key='charlie_theme_v1'; let theme='dark';
+  try { const saved=localStorage.getItem(key); if(saved==='light'||saved==='dark') theme=saved; } catch(_) {}
+  document.documentElement.dataset.theme=theme;
+  addEventListener('DOMContentLoaded',()=>{ const m=document.querySelector('meta[data-theme-color]'); if(m)m.content=theme==='dark'?'#171416':'#f4f1ec'; },{once:true});
+})();
+</script>
+<style>
+  :root{
+    --serif:Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  }
+  :root[data-theme="light"]{
+    color-scheme:light;
+    --paper:#f4f1ec; --paper-2:#ebe6dd; --ink:#1f1c18; --ink-2:#4a463f; --mute:#7a746a;
+    --rule:#d8d1c5; --rule-2:#c4bcad;
+    --slate:#3d5670; --slate-soft:rgba(61,86,112,.18);
+    --red:#a8321c; --red-soft:rgba(168,50,28,.14);
+    --moss:#4e6b3f;
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --paper:#171416; --paper-2:#211d20; --ink:#f2e7d8; --ink-2:#d4cac4; --mute:#aa9f99;
+    --rule:#3d3639; --rule-2:#61565b;
+    --slate:#8db5d0; --slate-soft:rgba(141,181,208,.18);
+    --red:#ff775e; --red-soft:rgba(255,119,94,.15);
+    --moss:#8dbb78;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--paper)}
+  body{margin:0;color:var(--ink);background:var(--paper);font-family:var(--serif);font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
+  a:hover{color:var(--red)}
+  .wrap{max-width:1180px;margin:0 auto;padding:clamp(18px,3.5vw,44px) clamp(16px,4vw,48px) 80px}
+
+  /* masthead */
+  .mast{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--rule);font-size:15px;color:var(--ink-2);flex-wrap:wrap}
+  .mast .brand{font-weight:500;color:var(--ink);text-decoration:none;font-size:17px}
+  .mast .crumb{color:var(--mute)}
+  .mast .crumb b{color:var(--ink-2);font-weight:400}
+  .mast-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
+  .mast-actions a{text-decoration:none;color:var(--ink-2)}
+  .pill{font:500 13px var(--mono);color:var(--ink);background:transparent;border:1px solid var(--rule-2);border-radius:999px;padding:6px 10px;cursor:pointer}
+  .pill:hover{border-color:var(--slate);color:var(--slate)}
+  .pill:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+  .pill.kid[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  /* hero */
+  .hero{padding:54px 0 30px;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:end}
+  h1{font-family:var(--serif);font-weight:300;font-size:clamp(44px,7.2vw,92px);line-height:.98;letter-spacing:-.022em;margin:0}
+  .dek{margin:22px 0 0;font-size:clamp(19px,2.2vw,23px);line-height:1.4;font-weight:300;color:var(--ink-2);max-width:34ch}
+  .dek i{font-style:italic;color:var(--ink)}
+  .paper{font-size:15.5px;color:var(--mute);line-height:1.5}
+  .paper i{color:var(--ink-2)}
+  .paper .who{margin-top:8px}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0}
+
+  /* instrument */
+  .inst{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:0;border:1px solid var(--rule-2);margin-top:34px;background:var(--paper)}
+  .tri{padding:22px 22px 18px;border-right:1px solid var(--rule-2)}
+  .tri svg{width:100%;height:auto;display:block;touch-action:none;cursor:grab}
+  .tri svg.dragging{cursor:grabbing}
+  .tri .cap{font-size:14.5px;color:var(--mute);margin:10px 2px 0;line-height:1.45}
+  .tri .cap b{font-weight:500;color:var(--ink-2)}
+  .panel{padding:22px 24px 20px;display:flex;flex-direction:column;gap:18px}
+  .sliders{display:grid;gap:14px}
+  .sl label{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;color:var(--ink-2);gap:10px}
+  .sl label .v{font-family:var(--mono);font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+  .sl label .v small{color:var(--mute);font-size:12px;margin-left:8px}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--rule-2);border-radius:1px;margin:10px 0 2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);cursor:pointer}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--slate-soft),0 0 0 5px var(--slate)}
+  input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 3px var(--slate-soft),0 0 0 5px var(--slate)}
+  .tau-track{position:relative;height:6px;margin-top:-4px}
+  .tau-track .band{position:absolute;top:0;height:6px;background:var(--slate-soft);border-left:1px solid var(--slate);border-right:1px solid var(--slate)}
+  .tau-track .one{position:absolute;top:-2px;width:0;height:10px;border-left:1px dashed var(--red)}
+  .tau-track .lab{position:absolute;top:8px;font-size:11.5px;color:var(--mute);font-family:var(--mono);transform:translateX(-50%);white-space:nowrap}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+  .presets .lead{font-size:14px;color:var(--mute);align-self:center;margin-right:2px}
+  button.pre{font-family:var(--serif);font-size:15px;background:transparent;color:var(--ink);border:1px solid var(--rule-2);padding:5px 11px;border-radius:2px;cursor:pointer;line-height:1.2}
+  button.pre:hover{border-color:var(--ink)}
+  button.pre:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+  button.pre[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .read{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;border-top:1px solid var(--rule);padding-top:12px}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--rule);font-size:15px}
+  .kv .k{color:var(--ink-2)}
+  .kv .v{font-family:var(--mono);font-size:13.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .kv .v .r{color:var(--red)}
+  .verdict{grid-column:1/-1;font-size:17px;line-height:1.45;padding:14px 0 2px;color:var(--ink)}
+  .verdict .hit{color:var(--red)}
+  .verdict .ok{color:var(--slate)}
+
+  /* row 2 */
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;border:1px solid var(--rule-2);border-top:0}
+  .cell{padding:20px 22px 18px}
+  .cell + .cell{border-left:1px solid var(--rule-2)}
+  .cell h2,.cond h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 4px;letter-spacing:-.005em}
+  .cell .sub,.cond .sub{font-size:14.5px;color:var(--mute);margin:0 0 12px}
+  .cell svg{width:100%;height:auto;display:block}
+  .ladder{display:grid;grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:3px;margin-top:8px}
+  .tick{height:26px;background:var(--paper-2);border:1px solid var(--rule);font-family:var(--mono);font-size:9.5px;color:var(--mute);display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;position:relative}
+  .tick.hit{background:var(--red);border-color:var(--red);color:var(--paper)}
+  .tick.near{background:var(--slate-soft);border-color:var(--slate);color:var(--slate)}
+  .tick.cur::after{content:"";position:absolute;left:-1px;right:-1px;top:-5px;height:2px;background:var(--ink)}
+  .key{font-size:13.5px;color:var(--mute);margin-top:10px;display:flex;gap:16px;flex-wrap:wrap}
+  .key i{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:6px;border:1px solid var(--rule)}
+
+  /* conditioning */
+  .cond{border:1px solid var(--rule-2);border-top:0;padding:20px 22px 18px}
+  .cond .head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+  .bigs{display:flex;gap:34px;flex-wrap:wrap}
+  .big{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .big .l{display:block;font-family:var(--serif);font-size:14.5px;color:var(--mute);margin-bottom:6px}
+  .big .n{font-size:30px;font-weight:500;line-height:1}
+  .big .n.slate{color:var(--slate)} .big .n.moss{color:var(--moss)}
+  .big .t{display:block;font-family:var(--serif);font-size:13.5px;color:var(--mute);margin-top:6px}
+  .cond .charts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;margin-top:16px}
+  .cond svg{width:100%;height:auto;display:block}
+  .cond .cap{font-size:14.5px;color:var(--mute);margin:8px 0 0;line-height:1.45}
+  .cond .cap b{color:var(--ink-2);font-weight:500}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--mute);margin-top:8px}
+  .legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+  .check{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:14.5px;color:var(--ink-2);margin-top:14px;padding-top:12px;border-top:1px solid var(--rule)}
+  .check button{font-family:var(--serif);font-size:15px;background:transparent;border:1px solid var(--ink);color:var(--ink);padding:5px 12px;border-radius:2px;cursor:pointer}
+  .check button:hover{background:var(--ink);color:var(--paper)}
+  .check button:focus-visible{outline:2px solid var(--slate);outline-offset:2px}
+  .check output{font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+
+  /* reading */
+  .reading{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:56px;margin-top:64px}
+  .reading p{margin:0 0 18px;font-size:18.5px;line-height:1.55;color:var(--ink);font-weight:400}
+  .reading p b{font-weight:500}
+  .reading p .f{font-family:var(--mono);font-size:15px;color:var(--ink-2);white-space:nowrap}
+  .reading h3{font-family:var(--serif);font-weight:400;font-size:25px;margin:34px 0 14px;letter-spacing:-.01em;line-height:1.2}
+  .reading h3:first-child{margin-top:0}
+  .status{border-left:2px solid var(--rule-2);padding-left:18px;font-size:15.5px;color:var(--ink-2);line-height:1.5}
+  .status h4{margin:0 0 10px;font-weight:500;font-size:16px;color:var(--ink)}
+  .status dl{margin:0}
+  .status dt{font-weight:500;color:var(--ink);margin-top:12px}
+  .status dt span{display:inline-block;font-size:12.5px;padding:1px 8px;border-radius:2px;margin-right:6px;font-family:var(--mono);vertical-align:1px}
+  .status dt .proved{background:var(--slate);color:var(--paper)}
+  .status dt .live{background:var(--moss);color:var(--paper)}
+  .status dt .not{background:transparent;color:var(--red);border:1px solid var(--red)}
+  .status dd{margin:4px 0 0}
+  footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--rule);font-size:14.5px;color:var(--mute);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  /* svg theme classes */
+  .s-ink{stroke:var(--ink)} .s-slate{stroke:var(--slate)} .s-red{stroke:var(--red)} .s-moss{stroke:var(--moss)} .s-rule{stroke:var(--rule)} .s-mute{stroke:var(--mute)} .s-paper{stroke:var(--paper)}
+  .f-ink{fill:var(--ink)} .f-ink2{fill:var(--ink-2)} .f-mute{fill:var(--mute)} .f-slate{fill:var(--slate)} .f-red{fill:var(--red)} .f-moss{fill:var(--moss)} .f-paper{fill:var(--paper)} .f-paper2{fill:var(--paper-2)} .f-slatesoft{fill:var(--slate-soft)}
+  .t-serif{font-family:var(--serif)} .t-mono{font-family:var(--mono)}
+
+  @media (max-width:980px){
+    .hero{grid-template-columns:1fr;gap:22px}
+    .inst{grid-template-columns:1fr}
+    .tri{border-right:0;border-bottom:1px solid var(--rule-2)}
+    .row2{grid-template-columns:1fr}
+    .cell + .cell{border-left:0;border-top:1px solid var(--rule-2)}
+    .cond .charts{grid-template-columns:1fr}
+    .reading{grid-template-columns:1fr;gap:28px}
+  }
+  @media (max-width:560px){
+    .mast{align-items:flex-start;flex-wrap:wrap}
+    .mast .crumb{order:3;flex-basis:100%}
+    .mast-actions{margin-left:0;width:100%;flex-wrap:wrap}
+    .read{grid-template-columns:1fr}
+    .reading > *{min-width:0}
+    .reading p .f{white-space:normal;overflow-wrap:anywhere}
+    body{font-size:17px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="mast">
+    <a class="brand" href="../index.html">Charlie.</a>
+    <span class="crumb"><b>Research</b> &nbsp;/&nbsp; shifted KMS matrices &nbsp;/&nbsp; interactive companion</span>
+    <div class="mast-actions">
+      <a href="../index.html">Proof companion</a>
+      <button class="pill kid" id="kidToggle" type="button" aria-pressed="false" data-k="kidbtn"></button>
+      <button class="pill" id="themeToggle" type="button" aria-label="Switch to dark mode">☾ Dark</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div>
+      <h1>One sine,<br>two numbers.</h1>
+      <p class="dek" data-k="dek"></p>
+    </div>
+    <div class="paper">
+      <span data-k="paperline"></span>
+      <div class="who" data-k="who"></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="inst">
+    <div class="tri">
+      <svg id="tri" viewBox="0 0 560 500" role="img" aria-label="The target triangle. Drag the point."></svg>
+      <p class="cap" data-k="tricap"></p>
+    </div>
+    <div class="panel">
+      <div class="sliders">
+        <div class="sl">
+          <label for="a"><span data-k="lab_a"></span><span class="v" id="aval"></span></label>
+          <input type="range" id="a" min="0.02" max="0.98" step="0.0005" value="0.5">
+        </div>
+        <div class="sl">
+          <label for="tau"><span data-k="lab_tau"></span><span class="v" id="tauval"></span></label>
+          <input type="range" id="tau" min="-0.3" max="1.3" step="0.0005" value="0.5">
+          <div class="tau-track" id="tautrack"></div>
+        </div>
+        <div class="sl" style="margin-top:14px">
+          <label for="n"><span data-k="lab_n"></span><span class="v" id="nval"></span></label>
+          <input type="range" id="n" min="2" max="240" step="1" value="40">
+        </div>
+      </div>
+
+      <div class="presets" id="presets">
+        <span class="lead" data-k="try"></span>
+        <button class="pre" data-p="hollow-gold" data-k="p_hollow"></button>
+        <button class="pre" data-p="recur" data-k="p_recur"></button>
+        <button class="pre" data-p="incompat" data-k="p_incompat"></button>
+        <button class="pre" data-p="once" data-k="p_once"></button>
+        <button class="pre" data-p="edge" data-k="p_edge"></button>
+        <button class="pre" data-p="outside" data-k="p_outside"></button>
+      </div>
+
+      <div class="read">
+        <div class="kv"><span class="k" data-k="k_band"></span><span class="v" id="band"></span></div>
+        <div class="kv"><span class="k" data-k="k_regime"></span><span class="v" id="regime"></span></div>
+        <div class="kv"><span class="k" data-k="k_alpha"></span><span class="v" id="alpha"></span></div>
+        <div class="kv"><span class="k" data-k="k_beta"></span><span class="v" id="beta"></span></div>
+        <div class="kv"><span class="k" data-k="k_arat"></span><span class="v" id="arat"></span></div>
+        <div class="kv"><span class="k" data-k="k_compat"></span><span class="v" id="compat"></span></div>
+        <div class="kv"><span class="k" data-k="k_dn"></span><span class="v" id="dn"></span></div>
+        <div class="kv"><span class="k" data-k="k_det"></span><span class="v" id="det"></span></div>
+        <div class="kv"><span class="k" data-k="k_nplus"></span><span class="v" id="nplus"></span></div>
+        <div class="kv"><span class="k" data-k="k_rule"></span><span class="v" id="rule"></span></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="cell">
+      <h2 data-k="spec_h"></h2>
+      <p class="sub" data-k="spec_sub"></p>
+      <svg id="spec" viewBox="0 0 560 120" role="img" aria-label="Eigenvalues of the shifted matrix on a line with zero marked."></svg>
+    </div>
+    <div class="cell">
+      <h2 data-k="lad_h"></h2>
+      <p class="sub" data-k="lad_sub"></p>
+      <div class="ladder" id="ladder"></div>
+      <div class="key" id="key"></div>
+    </div>
+  </div>
+
+  <div class="cond">
+    <div class="head">
+      <div>
+        <h2 data-k="cond_h"></h2>
+        <p class="sub" data-k="cond_sub"></p>
+      </div>
+      <div class="bigs">
+        <div class="big"><span class="l" data-k="big1"></span><span class="n slate" id="kact">—</span><span class="t" id="kacttag"></span></div>
+        <div class="big"><span class="l" data-k="big2"></span><span class="n moss" id="kpred">—</span><span class="t" id="kpredtag"></span></div>
+        <div class="big"><span class="l" data-k="big3"></span><span class="n" id="kratio">—</span><span class="t" data-k="big3tag"></span></div>
+      </div>
+    </div>
+    <div class="charts">
+      <div>
+        <svg id="kN" viewBox="0 0 560 200" role="img" aria-label="Condition number versus dimension on a log scale."></svg>
+        <div class="legend"><span><i style="border-color:var(--slate)"></i><span data-k="lgN1"></span></span><span><i style="border-color:var(--moss)"></i><span data-k="lgN2"></span></span><span><i style="border-color:var(--red);border-top-style:dotted"></i><span data-k="lgN3"></span></span></div>
+        <p class="cap" data-k="capN"></p>
+      </div>
+      <div>
+        <svg id="kT" viewBox="0 0 560 200" role="img" aria-label="Condition number versus shift tau across and beyond the band."></svg>
+        <div class="legend"><span><i style="border-color:var(--slate)"></i><span data-k="lgT1"></span> <span id="nsweep"></span></span><span><i style="border-color:var(--rule-2);border-top-width:8px"></i><span data-k="lgT2"></span></span><span><i style="border-color:var(--red);border-top-style:dashed"></i><span data-k="lgT3"></span></span></div>
+        <p class="cap" data-k="capT"></p>
+      </div>
+    </div>
+    <div class="check">
+      <button id="xcheck" type="button" data-k="xbtn"></button>
+      <output id="xout" data-k="xinit"></output>
+    </div>
+  </div>
+
+  <div class="reading">
+    <div id="readbody" data-k="reading"></div>
+    <aside class="status" id="status" data-k="status"></aside>
+  </div>
+
+  <footer>
+    <span>Charlie Dorsey · Fort Collins, Colorado</span>
+    <span>Offline interactive edition. <a href="../index.html">Back to the proof companion →</a> · <a href="https://charliedorsey.com/research/one-sine-two-numbers/" target="_blank" rel="noopener noreferrer">Live website ↗</a></span>
+  </footer>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const PI=Math.PI;
+
+/* ============================================================
+   LEXICON — every string that differs between the two modes.
+   Numbers never change; only the words around them do.
+   ============================================================ */
+const L={
+paper:{
+  title:"One sine, two numbers — a companion to the shifted KMS paper",
+  desc:"A draggable companion to ‘Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices’: the target triangle, the affine singularity web, and the five-regime conditioning law, computed live.",
+  kidbtn:"Explain it to a 7th grader",
+  aria_tri:"The target triangle. Drag the point.",
+  aria_spec:"Eigenvalues of the shifted matrix on a line with zero marked.",
+  aria_kN:"Condition number versus dimension on a log scale.",
+  aria_kT:"Condition number versus shift tau across and beyond the band.",
+  dek:"A geometric-decay matrix, minus a constant on its diagonal, has a determinant that is one sine wave. Where that wave crosses zero is decided by a <i>rhythm</i> and a <i>phase</i>. The hollow matrix is the one case where they are the same number.",
+  paperline:"Companion to <i>Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices</i> (2026).",
+  who:"Everything on this page is computed in the browser from the parameters you set. Blue is the computed spectrum; green is the leading prediction; red marks a numerical near-hit, not a proof of equality.",
+  tricap:"<b>Drag the point.</b> Across is the rhythm α = θ<sub>τ</sub>/π; up is the phase β. Every pair (a, τ) inside the band lands exactly once in this triangle; the hypotenuse is a → 0 and the two corners are the band edges. The matrix at dimension N is singular exactly when the point sits on the line β ≡ Nα (mod 1); the lines for N = 2…9 are drawn faintly, the current N in red. The dashed diagonal is τ = 1, the hollow matrix, which is the N = 1 line of the same family. The thin blue curve is where the τ slider can take you at the current a.",
+  ax_alpha:"rhythm α", ax_beta:"phase β",
+  hyp:"α + β = 1 is a → 0, no coupling", diag:"τ = 1, the hollow line", top:"τ → μ₊", right:"τ → μ₋", legs:"a → 1 along both legs",
+  out1:"τ is outside the band —", out2:"no crossing angle, no point to place.",
+  lab_a:"decay a", lab_tau:"shift τ", lab_n:"dimension N",
+  reg:{interior:"inside the band",below:"below the band",above:"above the band","lower edge":"lower edge","upper edge":"upper edge"},
+  regv:{interior:"interior",below:"below",above:"above","lower edge":"lower edge","upper edge":"upper edge"},
+  track_lo:"μ₋", track_hi:"μ₊", track_one:"1",
+  try:"Try",
+  p_hollow:"hollow, golden rhythm", p_recur:"recurrent, τ = φ", p_incompat:"rational but never singular", p_once:"singular exactly once", p_edge:"upper band edge", p_outside:"outside the band",
+  k_band:"band [μ₋, μ₊]", k_regime:"regime", k_alpha:"rhythm α", k_beta:"phase β", k_arat:"α rational?", k_compat:"compatibility qβ",
+  k_dn:"residual d<sub>N</sub> = ‖Nα − β‖", k_det:"det B<sub>N</sub>", k_nplus:"positive eigenvalues n₊ = ⌈Nα − β⌉", k_rule:"singular dimensions",
+  arat_yes:q=>`<span class="r">near p/q, q = ${q}</span>`, arat_no:"no close p/q with q ≤ 60",
+  compat_yes:(q,r)=>`<span class="r">qβ ≈ ${r} (numerical)</span>`, compat_no:(q,x)=>`qβ ≈ ${x.toFixed(4)} (numerical)`,
+  nplus_hit:"(near-zero numerical indicator)",
+  rule_forever:(r,q)=>`<span class="r">If exact: N ≡ ${r} (mod ${q})</span> · numerical fit only`, rule_never:"If exact: no singular sizes · numerical fit only",
+  rule_once:n=>`<span class="r">near-hit at N = ${n}</span> in N ≤ 600; not an exact count`, rule_none:"no near-hit found through N = 600; not a proof of never",
+  nplus_below:N=>`${N} (all positive)`, nplus_above:"0 (all negative)", rule_out:"none: no crossing angle",
+  v_hit:c=>`At N = ${c.N}, the computed residual is ${c.d}, below the display threshold. <span class="hit">Numerically near singular</span>; this floating-point observation does not certify an exact zero. The paper gives the exact criterion Nα − β ∈ ℤ.`,
+  v_miss:c=>`At N = ${c.N} the computed residual is ${c.d}. The leading approximation to the smallest singular value is π γ d<sub>N</sub>/(N+τ) = ${c.smin}. <span class="ok">No numerical near-hit at this threshold</span>; finite-precision output does not by itself prove full rank.`,
+  v_out:c=>`τ is ${c.reg} the band, so every eigenvalue of B<sub>N</sub> has the same sign and none can reach zero. <span class="ok">The condition number is bounded</span> by ${c.tag} = ${c.lim} for every N, and converges to it.`,
+  v_edge:c=>`τ sits exactly on the ${c.reg}. The crossing angle has hit the end of the interval where the symbol's slope vanishes, so the linear law gives way to a <span class="ok">quadratic one</span>: κ₂ ≈ ${c.tag}.`,
+  spec_h:"The spectrum of B<sub>N</sub> = T<sub>N</sub>(a) − τI", spec_sub:"All N eigenvalues on one line. The one nearest zero is what conditions a solve.",
+  spec_lo:v=>`μ₋−τ = ${v}`, spec_hi:v=>`μ₊−τ = ${v}`, spec_near:"nearest zero:",
+  lad_h:"When does it collapse?", lad_sub:"Dimensions N = 2 … 60. Red is a numerical near-hit at the chosen tolerance; blue is a record near-miss.",
+  key_hit:"computed residual below 10⁻⁷ (not an exact certificate)", key_near:"residual beats every earlier one by 25%", key_cur:"bar above = current N",
+  key_out:"Outside the band nothing can be singular: every eigenvalue has the same sign.",
+  cond_h:"Conditioning: five regimes, one formula each", cond_sub:"Bounded below the band, quadratic at the lower edge, arithmetic inside, quadratic at the upper edge, bounded above.",
+  big1:"κ₂(B<sub>N</sub>), computed", big2:"theorem, leading term", big3:"ratio", big3tag:"→ 1 as N grows, at fixed (a, τ)",
+  tag_sing:"numerical near-zero: inspect σ_min", tag_sig:(mx,mn)=>`σ_max = ${mx}, σ_min = ${mn}`, tag_C:(C,g)=>`C(a,τ) = ${C}, γ = ${g}`,
+  tag_bound:tag=>`bound and limit ${tag}`,
+  lgN1:"κ₂ vs N, computed", lgN2:"C(a,τ)(N+τ)/d<sub>N</sub>", lgN3:"numerical near-hit",
+  capN:"<b>Along N at the current (a, τ).</b> Inside the band the spikes are the arithmetic: κ₂ is a constant times (N+τ)/d<sub>N</sub>, so it is as large as the residual is small. Most N sit near the floor; the rare tall ones are the near-misses.",
+  limit:v=>`limit ${v}`,
+  lgT1:"κ₂ vs τ at N =", lgT2:"the band", lgT3:"τ = 1",
+  capT:"<b>Across τ at the current a.</b> Outside the band the curve is flat and finite. It climbs like N² into each edge. Inside it is a forest, and the forest is where the point in the triangle lives.",
+  kT_lo:v=>`μ₋ = ${v}`, kT_hi:v=>`μ₊ = ${v}`,
+  xbtn:"Cross-check against a dense eigensolver",
+  xinit:"Eigenvalues above come from the exact phase quantization Nθ + ψ<sub>a</sub>(θ) = kπ. Press to recompute the current N by Jacobi rotations and compare.",
+  xres:c=>`N = ${c.N}${c.capped?" (capped at 72 for the dense solve)":""}: max |λ<sub>Jacobi</sub> − λ<sub>phase</sub>| = ${c.md} over ${c.N} eigenvalues; κ₂ dense ${c.kj} vs phase ${c.kq}; ${c.ms} ms.`,
+  reading:`
+<h3>What you are dragging</h3>
+<p>Take the correlation matrix of an AR(1) process, <span class="f">T<sub>N</sub>(a) = [a<sup>|i−j|</sup>]</span>, and subtract a constant τ from the diagonal. For which N is τ an exact eigenvalue, and how close does the finite spectrum come when it misses? The inverse of T<sub>N</sub> is tridiagonal, so the determinant of the shifted matrix is a three-term recurrence, and a three-term recurrence with constant coefficients is a sine: <span class="f">det B<sub>N</sub> = (−1)<sup>N+1</sup> a<sup>N</sup> τ<sup>N−1</sup> sin π(Nα−β) / sin πα</span>. An N×N determinant collapses to one wave.</p>
+<p>The wave has a rhythm and a phase. The rhythm α is the crossing angle where the symbol μ<sub>a</sub>(θ) equals τ, divided by π. The phase β comes from the boundary argument of the Blaschke factor (z−a)/(1−az) at that angle. The pair (a, τ) determines (α, β) and the map inverts in closed form, which is why the triangle above is not a sketch but a chart: <span class="f">τ = sin πβ / sin πα</span>, <span class="f">a = cos ½π(α+β) / cos ½π(α−β)</span>.</p>
+<p>Singularity is <span class="f">Nα − β ∈ ℤ</span>, a family of straight lines in the triangle. From that one line of algebra the classification falls out. If α is rational, p/q, then either qβ is an integer and the matrix is singular on exactly one residue class of N forever, or it isn't and the matrix is never singular despite a rational angle. If α is irrational, at most one N can ever be singular. So the number of singular dimensions is <b>0, 1, or ∞</b>, all three behaviors are dense in the triangle, and almost every point has none.</p>
+<h3>Why the hollow matrix looked special</h3>
+<p>Set τ = 1 and the phase locks to the rhythm: β = α. That diagonal is the N = 1 member of the singularity web, which is literal, since T<sub>1</sub> − 1 = [0]. On it the residual becomes ‖(N−1)α‖, the inhomogeneous problem collapses to ordinary rational approximation, and Hurwitz's theorem makes the golden rhythm the best-protected point. Every result of the earlier hollow-matrix paper is this diagonal read off the general chart.</p>
+<p>Off the diagonal the phase is a second arithmetic coordinate and the golden protection is gone. For a fixed irrational rhythm and almost every phase, the residual falls below c/N infinitely often for every c, so κ₂ has growth exponent 2 with no O(N²) envelope at all. The page cannot show you that theorem; it is a statement about almost every β and no finite sweep exhibits it. What it can show is the mechanism: the residual, the web, and the collapse on the resonant line.</p>
+<h3>The number that matters</h3>
+<p>Inside the band the matrix is indefinite, so the eigenvalue nearest zero is the smallest singular value, and the theorem gives it exactly to leading order: <span class="f">σ<sub>min</sub> = π γ(a,τ) d<sub>N</sub>/(N+τ)</span>, where γ is the slope of the symbol at the crossing and N+τ is the angular derivative of z<sup>N</sup>(z−a)/(1−az). Divide the band width by that and you have κ₂. For irrational α the residual equidistributes, so κ₂/N follows a Pareto law with tail index 1: a heavy tail whose mean diverges. At the two band edges the slope γ vanishes and the law turns quadratic in N with explicit constants. Outside the band there is nothing to approach and the condition number is bounded.</p>`,
+  status:`
+<h4>What this page is and isn't</h4>
+<dl>
+<dt><span class="proved">proved</span>in the paper</dt>
+<dd>The triangle bijection and inverse formulas; the determinant; the 0/1/∞ law and its density stratification; the five-regime conditioning theorem with constants; the rational atomic laws and the irrational uniform and Pareto laws; the reduction of exceptional spikes to the one-sided inhomogeneous constant; the τ = 1 resonance.</dd>
+<dt><span class="live">computed</span>live, here</dt>
+<dd>Eigenvalues from numerical bisection of phase quantization, N up to 240. Determinant and residual readouts, near-zero flags, and κ₂ against its leading term. Red markers use a floating-point tolerance, not exact equality. The cross-check button recomputes the spectrum by dense Jacobi rotations.</dd>
+<dt><span class="not">not shown</span>and can't be</dt>
+<dd>The almost-every-phase theorem (no quadratic envelope for generic targets). Anything about non-real a. Uniformity as τ approaches an edge: the interior constants blow up there on purpose.</dd>
+<dt>Rational detection</dt>
+<dd>A continued-fraction match with q ≤ 60 within 10⁻⁹ is only a numerical candidate. Neither rationality nor the infinite singularity classification is certified by the slider. Refer to the paper for exact parameter claims.</dd>
+</dl>`
+},
+kid:{
+  title:"One sine, two numbers — the 7th-grader edition",
+  desc:"A machine that sometimes goes blind, a clock that decides when, and how twitchy it gets right before. The same page as the paper's companion, with the words swapped for a curious 7th grader. The numbers are the real ones.",
+  kidbtn:"Back to the paper's words",
+  aria_tri:"The stride-and-target triangle. Drag the point.",
+  aria_spec:"Every volume the machine can make on a line with zero marked.",
+  aria_kN:"Touchiness versus number of chairs on a log scale.",
+  aria_kT:"Touchiness versus turn-down across and beyond the dial.",
+  dek:"Put chairs in a row and let each one hear its neighbors, fainter with distance. Turn every chair's own volume down by the same amount. Whether that machine goes blind is decided by a clock hand with a <i>stride</i> and a painted <i>target</i>. The famous hollow table is the one case where the target is the hand's own first step.",
+  paperline:"The 7th-grader edition of the companion to <i>Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices</i> (2026). The words are simpler; the numbers are the real ones.",
+  who:"Everything here is computed live as you drag. Blue is the computed spectrum; green is the formula’s prediction; red marks a very close numerical approach, not an exact landing.",
+  tricap:"<b>Drag the point.</b> Across is the stride α, how far the clock hand jumps each tick. Up is the target β, where the dot is painted on the rim. Every fade-and-turn-down inside the dial has exactly one spot on this map. The machine with N chairs goes blind when the point sits on one of the blind lines, β = Nα minus a whole number; the lines for N = 2 to 9 are drawn faintly and the current N in red. The dashed line is the starting line, where the target is the hand's first footprint. The thin blue curve is everywhere the turn-down slider can take you at this fade.",
+  ax_alpha:"stride α", ax_beta:"target β",
+  hyp:"this edge: no echoes at all (a → 0)", diag:"the starting line (τ = 1)", top:"top of the dial", right:"bottom of the dial", legs:"echoes that never fade (a → 1)",
+  out1:"The target is off the dial —", out2:"the hand has nothing to land on.",
+  lab_a:"fade a", lab_tau:"turn-down τ", lab_n:"chairs N",
+  reg:{interior:"on the dial",below:"below the dial",above:"above the dial","lower edge":"bottom edge of the dial","upper edge":"top edge of the dial"},
+  regv:{interior:"on the dial",below:"below the dial",above:"above the dial","lower edge":"bottom edge","upper edge":"top edge"},
+  track_lo:"bottom", track_hi:"top", track_one:"start",
+  try:"Try",
+  p_hollow:"the first paper's hero", p_recur:"hand repeats, blind forever", p_incompat:"hand repeats, never blind", p_once:"blind once, then never", p_edge:"top of the dial", p_outside:"target off the dial",
+  k_band:"the dial", k_regime:"where the target sits", k_alpha:"stride α", k_beta:"target β", k_arat:"does the hand repeat?", k_compat:"target on a footprint?",
+  k_dn:"near-miss distance d<sub>N</sub>", k_det:"blind-test number", k_nplus:"volumes above zero n₊", k_rule:"blind chair-counts",
+  arat_yes:q=>`<span class="r">close to ${q} footprints</span>`, arat_no:"no clear pattern up to 60 footprints",
+  compat_yes:(q,r)=>`<span class="r">${q} × β ≈ ${r} (close)</span>`, compat_no:(q,x)=>`${q} × β ≈ ${x.toFixed(2)} (estimate)`,
+  nplus_hit:"(+ one numerically near zero)",
+  rule_forever:(r,q)=>`<span class="r">If the fractions are exact: every ${q}th from ${r}</span>`, rule_never:"If the fractions are exact: never; this screen is only an estimate",
+  rule_once:n=>`<span class="r">close call at ${n} chairs</span> among the first 600`, rule_none:"no close call found up to 600 chairs; that does not mean never",
+  nplus_below:N=>`all ${N} of them`, nplus_above:"none of them", rule_out:"none: target off the dial",
+  v_hit:c=>`At ${c.N} chairs the calculation puts the hand very close to its target (miss ≈ ${c.d} turns). <span class="hit">A near-hit, not proof the machine is blind.</span> The paper explains the exact landing rule.`,
+  v_miss:c=>`At ${c.N} chairs the computed miss is ${c.d} turns; the leading estimate for the closest eigenvalue to zero is ${c.smin}. <span class="ok">No very close numerical hit at this resolution</span>. The exact question belongs to the proof.`,
+  v_out:c=>`The target is ${c.reg}, so every volume the machine makes has the same sign and none can reach zero. <span class="ok">Touchiness stays bounded</span>: it never goes above ${c.tag} = ${c.lim}, and it settles onto that number as N grows.`,
+  v_edge:c=>`The target sits exactly at the ${c.reg}, where the dial goes flat: moving the hand barely changes the volume. The usual formula breaks and a <span class="ok">quadratic one</span> takes over: touchiness ≈ ${c.tag}.`,
+  spec_h:"Every volume the machine can make", spec_sub:"All N of them on one line. The one closest to zero decides how touchy the machine is.",
+  spec_lo:v=>`low end ${v}`, spec_hi:v=>`high end ${v}`, spec_near:"closest to blind:",
+  lad_h:"When does it go blind?", lad_sub:"Chair counts N = 2 to 60. Red: a very close numerical hit, not a proof. Blue: a record near-miss.",
+  key_hit:"the computed hand came very close to the target", key_near:"closest miss so far (beats the old record by 25%)", key_cur:"bar above = current N",
+  key_out:"Off the dial nothing can go blind: every volume has the same sign.",
+  cond_h:"Touchiness: five kinds of weather", cond_sub:"Calm below the dial, N² at the bottom edge, the clock inside, N² at the top edge, calm above.",
+  big1:"touchiness, measured", big2:"touchiness, from the formula", big3:"ratio", big3tag:"→ 1 as N grows",
+  tag_sing:"the hand came very close (numerically)", tag_sig:(mx,mn)=>`biggest volume ${mx}, closest to blind ${mn}`, tag_C:(C,g)=>`constant C = ${C}, steepness γ = ${g}`,
+  tag_bound:tag=>`ceiling and landing point ${tag}`,
+  lgN1:"touchiness vs chairs, measured", lgN2:"C × (N+τ) ÷ near-miss", lgN3:"numerical near-hit",
+  capN:"<b>Chair by chair at this fade and turn-down.</b> Inside the dial the spikes are the clock: touchiness is a constant times (N+τ) divided by the near-miss, so it's as tall as the miss was small. Most chair-counts sit near the floor; the tall ones are the close calls.",
+  limit:v=>`settles at ${v}`,
+  lgT1:"touchiness vs turn-down at N =", lgT2:"the dial", lgT3:"the starting line",
+  capT:"<b>Sliding the turn-down at this fade.</b> Off the dial the curve is flat and finite. It climbs like N² into each end of the dial. Inside it's a forest, and every tree is a near-miss on the clock.",
+  kT_lo:v=>`bottom = ${v}`, kT_hi:v=>`top = ${v}`,
+  xbtn:"Check it with a slower, dumber method",
+  xinit:"The volumes above come from the paper's exact formula for where the hand lands. Press to recompute the current N the brute-force way and compare.",
+  xres:c=>`N = ${c.N}${c.capped?" (capped at 72 for the slow method)":""}: the two methods agree to ${c.md} across all ${c.N} volumes; touchiness ${c.kj} vs ${c.kq}; ${c.ms} ms.`,
+  reading:`
+<h3>What you are dragging</h3>
+<p>Put N chairs in a row. Chair i hears chair j at a volume that fades by a factor <span class="f">a</span> for every chair between them; every chair hears itself at volume 1. That grid is the <b>echo table</b>. Now turn every chair's own volume down by the same amount τ. Feed the machine a list of N numbers and each chair adds up what it hears. The machine is <b>blind</b> if some non-zero list comes out as all zeros.</p>
+<p>There's one number that says whether the machine is blind (mathematicians call it the determinant), and for this machine the paper proves it collapses to a single wave: <span class="f">sin π(Nα − β)</span> times things that are never zero. A sine is zero only at whole numbers, so the machine is blind exactly when <span class="f">Nα − β</span> is a whole number. That's a clock. A hand jumps a <b>stride</b> of α turns every tick; a <b>target</b> is painted at β; the machine with N chairs is blind exactly when the hand lands on the target at tick N. Both numbers come from the fade and the turn-down, and you can go backwards too: <span class="f">τ = sin πβ / sin πα</span>, <span class="f">a = cos ½π(α+β) / cos ½π(α−β)</span>. That's why the triangle is a map and not a sketch.</p>
+<p>If the stride is a fraction p/q, the hand leaves q <b>footprints</b> and walks them again forever. Either the target is on a footprint, and the machine is blind every q-th chair-count forever, or it's between footprints, and the machine is never blind even though the hand keeps repeating. If the stride is not a fraction, the hand never revisits a spot, so it can land on the target at most once, and on a randomly painted target, never. So the number of blind chair-counts is <b>0, 1, or forever</b>, and the paper proves all three kinds are found in every corner of the map.</p>
+<h3>Why the hollow table looked special</h3>
+<p>Turn every chair down by exactly 1 and each chair's own volume becomes zero. On the map that's the line β = α: the target is painted on the hand's <b>first footprint</b>, the starting line. The one-chair hollow machine is blind for free (it's the number 0). And the near-miss at tick N is just how close the hand came back to where it started, which is a two-hundred-year-old question with a known answer: the <b>stubborn stride</b> 1/φ² ≈ 0.382 stays away from whole turns longest of any number. So the first paper found that this stride makes the hollow machine's worst case as gentle as it can be.</p>
+<p>It was the safest fade on one road. Step off the starting line and the target is a second, independent number. The paper uses a theorem (Kim, 2007) that says: pick any non-repeating stride, then paint the target by throwing a dart. With probability one, the hand will come closer to that target than <i>any</i> rule c/N you name, infinitely often. No stride protects you. The page can't show you that, because it's a statement about every chair-count at once, and no finite sweep exhibits it. What it can show is the machinery: the near-miss, the blind lines, and the collapse on the starting line.</p>
+<h3>The number that matters</h3>
+<p><b>Touchiness</b> is what you pay when the machine isn't blind but nearly is: if your output is off by 1%, the input you recover can be off by κ%. The paper gives the closest approach to blind exactly, to leading order: <span class="f">π × (steepness of the dial) × (near-miss) ÷ (N + τ)</span>. Divide the dial's width by that and touchiness is a constant times (N + τ) divided by the near-miss. For a non-repeating stride, touchiness ÷ N behaves like a <b>lottery</b>: usually small, sometimes enormous, and the enormous ones are so enormous that the average never settles. At either end of the dial the dial goes flat, steepness hits zero, and the law becomes N² with an exact constant. Off the dial there's nothing to hit and touchiness stays put.</p>`,
+  status:`
+<h4>What this page is and isn't</h4>
+<dl>
+<dt><span class="proved">proved</span>in the paper</dt>
+<dd>The map and its backwards formulas. The one-wave blind test. The clock. The 0, 1, forever law, and that all three are everywhere. The footprint test. The exact closest-approach and touchiness formulas, including the +τ. The five kinds of weather with their constants. The lottery. The dart theorem's consequence: no ceiling for a random target.</dd>
+<dt><span class="live">computed</span>live, here</dt>
+<dd>Numerical eigenvalues for up to 240 chairs, a blind-test number, the near-miss and touchiness. Red means a very small computed miss, not a mathematically proven zero. The check button recomputes the spectrum with a second numerical method.</dd>
+<dt><span class="not">not shown</span>and can't be</dt>
+<dd>The dart theorem itself: it's about every chair-count at once, for a target chosen with probability one, and no picture can show that. Anything about fades that aren't ordinary numbers. And the interior formulas get worse on purpose as the target approaches an end of the dial.</dd>
+<dt>Does the hand repeat?</dt>
+<dd>The readout only spots strides very close to a short fraction (within a billionth). A close match is not proof that the hand repeats forever. The paper proves what happens for truly exact fractions.</dd>
+</dl>`
+}
+};
+let MODE=(location.hash==="#kid")?"kid":"paper";
+const T=k=>L[MODE][k];
+
+function applyStatic(){
+  document.querySelectorAll("[data-k]").forEach(el=>{const v=T(el.dataset.k); if(typeof v==="string")el.innerHTML=v;});
+  document.title=T("title"); const md=$("metaDesc"); if(md)md.setAttribute("content",T("desc"));
+  $("kidToggle").setAttribute("aria-pressed",MODE==="kid"?"true":"false");
+  $("tri").setAttribute("aria-label",T("aria_tri"));
+  $("spec").setAttribute("aria-label",T("aria_spec"));
+  $("kN").setAttribute("aria-label",T("aria_kN"));
+  $("kT").setAttribute("aria-label",T("aria_kT"));
+  document.documentElement.setAttribute("data-mode",MODE);
+}
+$("kidToggle").addEventListener("click",()=>{
+  MODE=MODE==="kid"?"paper":"kid";
+  try{history.replaceState(null,"",MODE==="kid"?"#kid":location.pathname+location.search);}catch(e){}
+  applyStatic(); render(); $("xout").innerHTML=T("xinit");
+});
+window.addEventListener("hashchange",()=>{const m=location.hash==="#kid"?"kid":"paper"; if(m!==MODE){MODE=m;applyStatic();render();}});
+
+/* theme */
+(function(){
+  const key="charlie_theme_v1", root=document.documentElement, btn=$("themeToggle");
+  const set=t=>{root.setAttribute("data-theme",t); btn.textContent=t==="dark"?"☀ Light":"☾ Dark"; btn.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode"); const tc=$("themeColor"); if(tc)tc.setAttribute("content",t==="dark"?"#171416":"#f4f1ec");};
+  let saved="dark"; try{const v=localStorage.getItem(key); if(v==="light"||v==="dark")saved=v;}catch(e){}
+  set(saved);
+  btn.addEventListener("click",()=>{const t=root.getAttribute("data-theme")==="dark"?"light":"dark"; set(t); try{localStorage.setItem(key,t);}catch(e){}});
+})();
+
+/* ============================================================ math */
+const mu=(a,t)=>(1-a*a)/(1-2*a*Math.cos(t)+a*a);
+const psi=(a,t)=>Math.atan2((1-a*a)*Math.sin(t),(1+a*a)*Math.cos(t)-2*a);
+const muMinus=a=>(1-a)/(1+a), muPlus=a=>(1+a)/(1-a);
+const distZ=x=>Math.abs(x-Math.round(x));
+function coords(a,tau){const c=(1+a*a-(1-a*a)/tau)/(2*a);const th=Math.acos(Math.max(-1,Math.min(1,c)));return {alpha:th/PI,beta:1-psi(a,th)/PI,theta:th};}
+function inverse(al,be){return {a:Math.cos(PI/2*(al+be))/Math.cos(PI/2*(al-be)),tau:Math.sin(PI*be)/Math.sin(PI*al)};}
+function eigenangles(N,a){const out=new Array(N);let lo=0;for(let k=1;k<=N;k++){const target=k*PI;let Lo=lo,R=PI;for(let i=0;i<48;i++){const m=0.5*(Lo+R);if(N*m+psi(a,m)<target)Lo=m;else R=m;}out[k-1]=0.5*(Lo+R);lo=out[k-1];}return out;}
+function spectrum(N,a,tau){const th=eigenangles(N,a);const ev=new Array(N);for(let i=0;i<N;i++)ev[i]=mu(a,th[i])-tau;return ev;}
+function kappaOf(ev){let mx=0,mn=Infinity;for(const e of ev){const m=Math.abs(e);if(m>mx)mx=m;if(m<mn)mn=m;}return {mx,mn,k:mn>1e-15?mx/mn:Infinity};}
+function continuedFraction(x,maxTerms=14){const t=[];let v=x;for(let i=0;i<maxTerms;i++){const q=Math.floor(v+1e-12);t.push(q);const f=v-q;if(f<1e-11)return {terms:t,term:true};v=1/f;}return {terms:t,term:false};}
+function rationalOf(x,qmax=60,tol=1e-9){const {terms}=continuedFraction(x,16);let p0=1,p1=terms[0],q0=0,q1=1;if(Math.abs(x-p1)<tol)return {p:p1,q:1};for(let i=1;i<terms.length;i++){const p=terms[i]*p1+p0,q=terms[i]*q1+q0;if(q>qmax)break;if(Math.abs(x-p/q)<tol)return {p,q};p0=p1;p1=p;q0=q1;q1=q;}return null;}
+function jacobiEig(M){const n=M.length,A=M.map(r=>r.slice());for(let sweep=0;sweep<80;sweep++){let off=0;for(let p=0;p<n-1;p++)for(let q=p+1;q<n;q++)off+=A[p][q]*A[p][q];if(off<1e-26)break;for(let p=0;p<n-1;p++)for(let q=p+1;q<n;q++){if(Math.abs(A[p][q])<1e-300)continue;const th=(A[q][q]-A[p][p])/(2*A[p][q]);const t=Math.sign(th||1)/(Math.abs(th)+Math.sqrt(th*th+1));const c=1/Math.sqrt(t*t+1),s=t*c;for(let k=0;k<n;k++){const akp=A[k][p],akq=A[k][q];A[k][p]=c*akp-s*akq;A[k][q]=s*akp+c*akq;}for(let k=0;k<n;k++){const apk=A[p][k],aqk=A[q][k];A[p][k]=c*apk-s*aqk;A[q][k]=s*apk+c*aqk;}}}return Array.from({length:n},(_,i)=>A[i][i]).sort((x,y)=>x-y);}
+const gammaOf=(a,tau,al)=>2*a*tau*tau*Math.sin(PI*al)/(1-a*a);
+const big=x=>!isFinite(x)?"—":x>=1e6?x.toExponential(2):x>=100?Math.round(x).toLocaleString():x.toFixed(2);
+const sup=p=>String(p).replace(/-/g,"⁻").replace(/\d/g,d=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+const fmt=(x,d=5)=>Number.isFinite(x)?x.toFixed(d):"—";
+
+/* ============================================================ state */
+const aEl=$("a"),tEl=$("tau"),nEl=$("n");
+const S={a:0.5,tau:1.0,N:40,exact:null};
+const tauFromT=(a,t)=>muMinus(a)+t*(muPlus(a)-muMinus(a));
+const tFromTau=(a,tau)=>(tau-muMinus(a))/(muPlus(a)-muMinus(a));
+function setFromSliders(){S.a=parseFloat(aEl.value);S.tau=tauFromT(S.a,parseFloat(tEl.value));S.N=parseInt(nEl.value);}
+function pushToSliders(){aEl.value=S.a.toFixed(4);tEl.value=Math.max(-0.3,Math.min(1.3,tFromTau(S.a,S.tau))).toFixed(4);nEl.value=S.N;}
+function regimeOf(a,tau){const lo=muMinus(a),hi=muPlus(a),eps=1e-9;if(Math.abs(tau-lo)<eps)return "lower edge";if(Math.abs(tau-hi)<eps)return "upper edge";if(tau<lo)return "below";if(tau>hi)return "above";return "interior";}
+
+const PRESETS={
+  "hollow-gold":()=>{const al=1-2/(1+Math.sqrt(5));return {alpha:al,beta:al,N:56};},
+  "recur":()=>({alpha:1/5,beta:3/5,N:23}),
+  "incompat":()=>({alpha:1/3,beta:1/2,N:40}),
+  "once":()=>{const c=coords(0.5,1.5);return {alpha:c.alpha,beta:c.beta,N:2};},
+  "edge":()=>({a:0.5,tau:muPlus(0.5),N:120}),
+  "outside":()=>({a:0.5,tau:muPlus(0.5)+0.6,N:80}),
+};
+let activePreset=null;
+document.querySelectorAll("button.pre").forEach(b=>b.addEventListener("click",()=>{
+  const p=PRESETS[b.dataset.p]();
+  if(p.alpha!==undefined){const inv=inverse(p.alpha,p.beta);S.a=inv.a;S.tau=inv.tau;S.exact={alpha:p.alpha,beta:p.beta};}
+  else{S.a=p.a;S.tau=p.tau;S.exact=null;}
+  S.N=p.N;activePreset=b.dataset.p;pushToSliders();render();
+}));
+const clearPreset=()=>{activePreset=null;S.exact=null;};
+
+/* ============================================================ triangle */
+const TW=560,TH=500,tx0=52,ty0=452,tsc=396;
+const TX=al=>tx0+al*tsc,TY=be=>ty0-be*tsc;
+function railPath(a){let d="";const lo=muMinus(a),hi=muPlus(a);for(let i=1;i<=199;i++){const tau=lo+(hi-lo)*i/200;const c=coords(a,tau);d+=(i===1?"M":"L")+TX(c.alpha).toFixed(1)+" "+TY(c.beta).toFixed(1);}return d;}
+function drawTriangle(al,be,N,inside){
+  const svg=$("tri");let s="";
+  const tri=`${TX(0)},${TY(0)} ${TX(1)},${TY(0)} ${TX(0)},${TY(1)}`;
+  s+=`<polygon points="${tri}" class="f-paper2 s-ink" stroke-width="1.2"/>`;
+  s+=`<clipPath id="clipT"><polygon points="${tri}"/></clipPath><g clip-path="url(#clipT)">`;
+  const drawN=new Set([2,3,4,5,6,7,8,9]);if(inside)drawN.add(N);
+  for(const n of [...drawN].sort((x,y)=>x-y)){const cur=(n===N&&inside);
+    for(let m=0;m<=n;m++){const a0=m/n,a1=(m+1)/(n+1);if(a1<=0||a0>=1)continue;
+      s+=`<line x1="${TX(a0)}" y1="${TY(0)}" x2="${TX(a1)}" y2="${TY(1-a1)}" class="${cur?'s-red':'s-slate'}" stroke-width="${cur?1.6:0.6}" stroke-opacity="${cur?1:0.22+0.05*(9-n)}"/>`;}}
+  s+=`<line x1="${TX(0)}" y1="${TY(0)}" x2="${TX(0.5)}" y2="${TY(0.5)}" class="s-red" stroke-width="1.2" stroke-dasharray="5 4"/>`;
+  s+=`<path d="${railPath(S.a)}" fill="none" class="s-slate" stroke-width="1" stroke-opacity=".7"/></g>`;
+  s+=`<text x="${TX(0.5)}" y="${ty0+34}" class="t-serif f-ink2" font-size="17" text-anchor="middle">${T("ax_alpha")}</text>`;
+  s+=`<text x="${tx0-30}" y="${TY(0.5)}" class="t-serif f-ink2" font-size="17" text-anchor="middle" transform="rotate(-90 ${tx0-30} ${TY(0.5)})">${T("ax_beta")}</text>`;
+  s+=`<text x="${TX(0)-6}" y="${ty0+16}" class="t-mono f-mute" font-size="11" text-anchor="end">0</text>`;
+  s+=`<text x="${TX(1)}" y="${ty0+16}" class="t-mono f-mute" font-size="11" text-anchor="middle">1</text>`;
+  s+=`<text x="${TX(0)-8}" y="${TY(1)+4}" class="t-mono f-mute" font-size="11" text-anchor="end">1</text>`;
+  s+=`<text x="${TX(0.60)}" y="${TY(0.44)}" class="t-serif f-mute" font-style="italic" font-size="14" transform="rotate(-45 ${TX(0.60)} ${TY(0.44)})">${T("hyp")}</text>`;
+  s+=`<text x="${TX(0.30)}" y="${TY(0.315)}" class="t-serif f-red" font-style="italic" font-size="14" transform="rotate(-45 ${TX(0.30)} ${TY(0.315)})">${T("diag")}</text>`;
+  s+=`<text x="${TX(0)+8}" y="${TY(1)-10}" class="t-serif f-mute" font-style="italic" font-size="13">${T("top")}</text>`;
+  s+=`<text x="${TX(1)}" y="${TY(0)-10}" class="t-serif f-mute" font-style="italic" font-size="13" text-anchor="end">${T("right")}</text>`;
+  s+=`<text x="${TX(0)+8}" y="${TY(0)-8}" class="t-serif f-mute" font-style="italic" font-size="13">${T("legs")}</text>`;
+  if(inside){s+=`<circle cx="${TX(al)}" cy="${TY(be)}" r="16" class="f-slatesoft"/><circle cx="${TX(al)}" cy="${TY(be)}" r="6" class="f-slate s-paper" stroke-width="2"/>`;}
+  else{s+=`<text x="${TX(0.52)}" y="${TY(0.62)}" class="t-serif f-ink2" font-size="16" text-anchor="middle">${T("out1")}</text><text x="${TX(0.52)}" y="${TY(0.62)+22}" class="t-serif f-ink2" font-size="16" text-anchor="middle">${T("out2")}</text>`;}
+  svg.innerHTML=s;
+}
+(function(){const svg=$("tri");let drag=false;
+  const toAB=e=>{const r=svg.getBoundingClientRect();const x=(e.clientX-r.left)*TW/r.width,y=(e.clientY-r.top)*TH/r.height;let al=(x-tx0)/tsc,be=(ty0-y)/tsc;const m=0.012;al=Math.max(m,al);be=Math.max(m,be);if(al+be>1-m){const ex=al+be-(1-m);al-=ex/2;be-=ex/2;}return {al,be};};
+  const apply=({al,be})=>{const inv=inverse(al,be);S.a=Math.min(0.98,Math.max(0.02,inv.a));S.tau=inv.tau;clearPreset();pushToSliders();render();};
+  svg.addEventListener("pointerdown",e=>{drag=true;svg.classList.add("dragging");svg.setPointerCapture(e.pointerId);apply(toAB(e));});
+  svg.addEventListener("pointermove",e=>{if(drag)apply(toAB(e));});
+  const up=()=>{drag=false;svg.classList.remove("dragging");};
+  svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);
+})();
+
+/* ============================================================ spectrum */
+function drawSpec(ev,a,tau){
+  const W=560,pad=26,mid=62;const lo=muMinus(a)-tau,hi=muPlus(a)-tau;const X=v=>pad+(v-lo)/(hi-lo)*(W-2*pad);let s="";
+  s+=`<rect x="${X(lo)}" y="${mid-4}" width="${X(hi)-X(lo)}" height="8" class="f-paper2"/>`;
+  const z=X(0);if(z>=pad-1&&z<=W-pad+1){s+=`<line x1="${z}" y1="14" x2="${z}" y2="${mid+30}" class="s-ink" stroke-width="1" stroke-dasharray="2 3"/><text x="${z}" y="10" class="t-mono f-ink2" font-size="11" text-anchor="middle">0</text>`;}
+  s+=`<text x="${X(lo)}" y="${mid+30}" class="t-mono f-mute" font-size="10.5" text-anchor="middle">${T("spec_lo")(lo.toFixed(3))}</text>`;
+  s+=`<text x="${X(hi)}" y="${mid+30}" class="t-mono f-mute" font-size="10.5" text-anchor="middle">${T("spec_hi")(hi.toFixed(3))}</text>`;
+  let mn=Infinity,mi=-1;ev.forEach((e,i)=>{if(Math.abs(e)<mn){mn=Math.abs(e);mi=i;}});
+  const hitc=mn<1e-8?"f-red":"f-slate",hits=mn<1e-8?"s-red":"s-slate";
+  ev.forEach((e,i)=>{const isMin=i===mi;s+=`<circle cx="${X(e)}" cy="${mid}" r="${isMin?5:2.6}" class="${isMin?hitc:'f-mute'}" opacity="${isMin?1:.8}"/>`;});
+  if(mi>=0){const e=ev[mi];s+=`<circle cx="${X(e)}" cy="${mid}" r="11" fill="none" class="${hits}" stroke-width="1"/><text x="${Math.min(W-70,Math.max(70,X(e)))}" y="${mid-18}" class="t-mono ${hitc}" font-size="11.5" text-anchor="middle">${T("spec_near")} ${mn<1e-3?mn.toExponential(2):mn.toFixed(4)}</text>`;}
+  $("spec").innerHTML=s;
+}
+
+/* ============================================================ ladder */
+// A red marker is a finite-precision near-hit, not an exact singularity test.
+const hitAt=(N,al,be)=>distZ(N*al-be)<1e-7;
+function drawLadder(al,be,N,inside,arat){
+  let s="";const near=new Set();
+  if(inside&&!arat){let best=Infinity;for(let n=2;n<=60;n++){const d=distZ(n*al-be);if(d<best*0.75){best=d;near.add(n);}}near.delete(2);}
+  for(let n=2;n<=60;n++){let cls="tick";if(inside&&hitAt(n,al,be))cls+=" hit";else if(near.has(n))cls+=" near";if(n===N)cls+=" cur";
+    const show=(n%10===0||cls.includes("hit")||cls.includes("near"))?n:"";
+    s+=`<div class="${cls}" title="N=${n}${inside?', d='+distZ(n*al-be).toFixed(4):''}">${show}</div>`;}
+  $("ladder").innerHTML=s;
+  $("key").innerHTML=!inside?`<span>${T("key_out")}</span>`
+    :`<span><i style="background:var(--red);border-color:var(--red)"></i>${T("key_hit")}</span><span><i style="background:var(--slate-soft);border-color:var(--slate)"></i>${T("key_near")}</span><span><i style="background:transparent;border-color:var(--ink)"></i>${T("key_cur")}</span>`;
+}
+
+/* ============================================================ kappa vs N */
+let kNtimer=null;const scheduleKN=()=>{if(kNtimer)clearTimeout(kNtimer);kNtimer=setTimeout(drawKN,60);};
+function drawKN(){
+  const a=S.a,tau=S.tau,reg=regimeOf(a,tau),inside=reg==="interior";const NMAX=240;const W=560,H=200,pl=44,pr=12,pt=14,pb=26;
+  const ks=[],preds=[],hits=[];let C=null,al=0,be=0;
+  if(inside){const c=S.exact||coords(a,tau);al=c.alpha;be=c.beta;const g=gammaOf(a,tau,al);const M=Math.max(muPlus(a)-tau,tau-muMinus(a));C=M/(PI*g);}
+  let kmax=1,kmin=Infinity;
+  for(let n=2;n<=NMAX;n++){const {k}=kappaOf(spectrum(n,a,tau));const isHit=inside&&hitAt(n,al,be);if(isHit)hits.push(n);
+    const kv=isFinite(k)?k:NaN;ks.push(kv);
+    if(inside){const d=distZ(n*al-be);preds.push(d>1e-12?C*(n+tau)/d:NaN);}else preds.push(NaN);
+    if(isFinite(kv)){kmax=Math.max(kmax,kv);kmin=Math.min(kmin,kv);}}
+  const lgMin=Math.floor(Math.log10(Math.max(kmin,1))),lgMax=Math.ceil(Math.log10(kmax*1.3));
+  const X=n=>pl+(n-2)/(NMAX-2)*(W-pl-pr),Y=k=>pt+(1-(Math.log10(k)-lgMin)/(lgMax-lgMin))*(H-pt-pb);
+  let s="";
+  for(let p=lgMin;p<=lgMax;p++){const y=Y(Math.pow(10,p));s+=`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" class="s-rule"/><text x="${pl-6}" y="${y+4}" class="t-mono f-mute" font-size="10" text-anchor="end">10${sup(p)}</text>`;}
+  for(const n of [50,100,150,200,240])s+=`<text x="${X(n)}" y="${H-8}" class="t-mono f-mute" font-size="10" text-anchor="middle">${n}</text>`;
+  s+=`<text x="${W-pr}" y="${H-8}" class="t-serif f-mute" font-size="12" text-anchor="end">N</text>`;
+  const path=(arr,cls,w,extra="")=>{let d="",pen=false;arr.forEach((v,i)=>{if(!isFinite(v)||v>Math.pow(10,lgMax)){pen=false;return;}d+=(pen?"L":"M")+X(i+2).toFixed(1)+" "+Y(v).toFixed(1);pen=true;});return `<path d="${d}" fill="none" class="${cls}" stroke-width="${w}" ${extra}/>`;};
+  if(inside)s+=path(preds,"s-moss",1.1,'stroke-opacity=".8"');
+  s+=path(ks.map(k=>isFinite(k)?Math.min(k,Math.pow(10,lgMax)):NaN),"s-slate",1.4);
+  for(const n of hits)s+=`<line x1="${X(n)}" y1="${pt}" x2="${X(n)}" y2="${H-pb}" class="s-red" stroke-width="1" stroke-dasharray="2 3"/>`;
+  s+=`<line x1="${X(S.N)}" y1="${pt}" x2="${X(S.N)}" y2="${H-pb}" class="s-ink" stroke-width="1" stroke-opacity=".5"/>`;
+  if(!inside){const lim=reg==="below"?(muPlus(a)-tau)/(muMinus(a)-tau):reg==="above"?(tau-muMinus(a))/(tau-muPlus(a)):null;
+    if(lim){s+=`<line x1="${pl}" y1="${Y(lim)}" x2="${W-pr}" y2="${Y(lim)}" class="s-moss" stroke-width="1" stroke-dasharray="4 3"/><text x="${W-pr-4}" y="${Y(lim)-5}" class="t-mono f-moss" font-size="10.5" text-anchor="end">${T("limit")(lim.toFixed(3))}</text>`;}
+    else{const upper=reg==="upper edge";const K=upper?4*muMinus(a)**2/(PI*PI):4*muPlus(a)**2/(PI*PI);let d="";for(let n=2;n<=NMAX;n++){const v=K*(n+tau)**2;d+=(n===2?"M":"L")+X(n).toFixed(1)+" "+Y(v).toFixed(1);}
+      s+=`<path d="${d}" fill="none" class="s-moss" stroke-width="1.1" stroke-dasharray="4 3"/><text x="${pl+6}" y="${pt+12}" class="t-mono f-moss" font-size="10.5">4μ${upper?'₋':'₊'}²/π² · (N+τ)²</text>`;}}
+  $("kN").innerHTML=s;
+}
+
+/* ============================================================ kappa vs tau */
+let kTtimer=null,kTcache={a:null,data:null};const scheduleKT=()=>{if(kTtimer)clearTimeout(kTtimer);kTtimer=setTimeout(drawKT,80);};
+function drawKT(){
+  const a=S.a,Ns=100;$("nsweep").textContent=Ns;
+  const lo=muMinus(a),hi=muPlus(a),Wb=hi-lo,t0=lo-0.32*Wb,t1=hi+0.32*Wb,M=360;
+  if(kTcache.a!==a){const th=eigenangles(Ns,a);const mus=th.map(t=>mu(a,t));const data=[];for(let i=0;i<=M;i++){const tau=t0+(t1-t0)*i/M;let mx=0,mn=Infinity;for(const m of mus){const v=Math.abs(m-tau);if(v>mx)mx=v;if(v<mn)mn=v;}data.push({tau,k:mn>1e-15?mx/mn:Infinity});}kTcache={a,data};}
+  const data=kTcache.data;const W=560,H=200,pl=44,pr=12,pt=14,pb=26;
+  let kmax=1;for(const d of data)if(isFinite(d.k))kmax=Math.max(kmax,d.k);
+  const lgMin=0,lgMax=Math.ceil(Math.log10(kmax*1.2));
+  const X=tau=>pl+(tau-t0)/(t1-t0)*(W-pl-pr),Y=k=>pt+(1-(Math.log10(Math.max(k,1))-lgMin)/(lgMax-lgMin))*(H-pt-pb);
+  let s=`<rect x="${X(lo)}" y="${pt}" width="${X(hi)-X(lo)}" height="${H-pt-pb}" class="f-paper2"/>`;
+  for(let p=lgMin;p<=lgMax;p++){const y=Y(Math.pow(10,p));s+=`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" class="s-rule"/><text x="${pl-6}" y="${y+4}" class="t-mono f-mute" font-size="10" text-anchor="end">10${sup(p)}</text>`;}
+  if(1>t0&&1<t1)s+=`<line x1="${X(1)}" y1="${pt}" x2="${X(1)}" y2="${H-pb}" class="s-red" stroke-width="1" stroke-dasharray="4 3"/>`;
+  let d="",pen=false;for(const q of data){if(!isFinite(q.k)){pen=false;continue;}d+=(pen?"L":"M")+X(q.tau).toFixed(1)+" "+Y(Math.min(q.k,Math.pow(10,lgMax))).toFixed(1);pen=true;}
+  s+=`<path d="${d}" fill="none" class="s-slate" stroke-width="1.2"/>`;
+  s+=`<line x1="${X(S.tau)}" y1="${pt}" x2="${X(S.tau)}" y2="${H-pb}" class="s-ink" stroke-width="1.4"/>`;
+  s+=`<text x="${X(lo)}" y="${H-8}" class="t-mono f-mute" font-size="10" text-anchor="middle">${T("kT_lo")(lo.toFixed(3))}</text>`;
+  s+=`<text x="${X(hi)}" y="${H-8}" class="t-mono f-mute" font-size="10" text-anchor="middle">${T("kT_hi")(hi.toFixed(3))}</text>`;
+  s+=`<text x="${W-pr}" y="${H-8}" class="t-serif f-mute" font-size="12" text-anchor="end">τ</text>`;
+  $("kT").innerHTML=s;
+}
+
+/* ============================================================ tau track */
+function drawTauTrack(){
+  const tr=$("tautrack");const pct=t=>((t+0.3)/1.6*100).toFixed(2)+"%";const one=tFromTau(S.a,1);const showOne=one>-0.3&&one<1.3;
+  tr.innerHTML=`<div class="band" style="left:${pct(0)};width:${(1/1.6*100).toFixed(2)}%"></div>`+(showOne?`<div class="one" style="left:${pct(one)}"></div>`:"")
+    +`<div class="lab" style="left:${pct(0)}">${T("track_lo")}</div><div class="lab" style="left:${pct(1)}">${T("track_hi")}</div>`+(showOne?`<div class="lab" style="left:${pct(one)};color:var(--red)">${T("track_one")}</div>`:"");
+}
+
+/* ============================================================ render */
+function render(){
+  const a=S.a,tau=S.tau,N=S.N;const reg=regimeOf(a,tau);const inside=reg==="interior";
+  $("aval").textContent=a.toFixed(4);
+  $("tauval").innerHTML=tau.toFixed(4)+`<small>${T("reg")[reg]}</small>`;
+  $("nval").textContent=N;
+  $("band").textContent=`[${muMinus(a).toFixed(4)}, ${muPlus(a).toFixed(4)}]`;
+  $("regime").textContent=T("regv")[reg];
+  drawTauTrack();
+  document.querySelectorAll("button.pre").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===activePreset?"true":"false"));
+  let al=NaN,be=NaN,arat=null,compat=null;
+  if(inside){const c=S.exact||coords(a,tau);al=c.alpha;be=c.beta;arat=rationalOf(al);if(arat){const qb=arat.q*be;compat=Math.abs(qb-Math.round(qb))<1e-7?Math.round(qb):null;}}
+  drawTriangle(al,be,N,inside);
+  const ev=spectrum(N,a,tau);const {mx,mn,k}=kappaOf(ev);
+  drawSpec(ev,a,tau);
+  if(inside){
+    const dN=distZ(N*al-be);const hit=dN<1e-7; // numerical near-hit only; never a proof of exact singularity
+    const det=Math.pow(-1,N+1)*Math.pow(a,N)*Math.pow(tau,N-1)*Math.sin(PI*(N*al-be))/Math.sin(PI*al);
+    $("alpha").textContent=fmt(al,6)+(arat?`  ≈ ${arat.p}/${arat.q}`:"");
+    $("beta").textContent=fmt(be,6)+(arat&&compat!==null?`  ≈ ${compat}/${arat.q}`:"");
+    $("arat").innerHTML=arat?T("arat_yes")(arat.q):T("arat_no");
+    $("compat").innerHTML=arat?(compat!==null?T("compat_yes")(arat.q,compat):T("compat_no")(arat.q,arat.q*be)):"—";
+    $("dn").innerHTML=hit?`<span class="r">${dN.toExponential(2)} (near)</span>`:fmt(dN,6);
+    $("det").innerHTML=det.toExponential(3);
+    $("nplus").textContent=`${Math.ceil(N*al-be-1e-12)}${hit?"  "+T("nplus_hit"):""}`;
+    let ruleTxt;
+    if(arat){if(compat!==null){let r0=-1;for(let n=0;n<arat.q;n++)if(((n*arat.p-compat)%arat.q+arat.q)%arat.q===0){r0=n;break;}ruleTxt=T("rule_forever")(r0,arat.q);}else ruleTxt=T("rule_never");}
+    else{let found=null;for(let n=2;n<=600;n++)if(hitAt(n,al,be)){found=n;break;}ruleTxt=found?T("rule_once")(found):T("rule_none");}
+    $("rule").innerHTML=ruleTxt;
+    const g=gammaOf(a,tau,al),M=Math.max(muPlus(a)-tau,tau-muMinus(a)),C=M/(PI*g);
+    $("verdict").innerHTML=hit?T("v_hit")({N,d:dN.toExponential(2)}):T("v_miss")({N,d:fmt(dN,4),smin:fmt(PI*g*dN/(N+tau),5)});
+    const kp=dN>1e-14?C*(N+tau)/dN:NaN;
+    $("kact").textContent=big(k);$("kacttag").textContent=(hit?T("tag_sing")+" · ":"")+T("tag_sig")(mx.toFixed(4),mn<1e-3?mn.toExponential(2):mn.toFixed(5));
+    $("kpred").textContent=isFinite(kp)?big(kp):"—";$("kpredtag").textContent=T("tag_C")(C.toFixed(4),g.toFixed(4));
+    $("kratio").textContent=(isFinite(k)&&isFinite(kp))?(k/kp).toFixed(4):"—";
+    drawLadder(al,be,N,true,arat);
+  }else{
+    for(const id of ["alpha","beta","arat","compat","dn","det"])$(id).textContent="—";
+    $("nplus").textContent=reg==="below"?T("nplus_below")(N):reg==="above"?T("nplus_above"):"—";
+    $("rule").textContent=T("rule_out");
+    let lim,tag;
+    if(reg==="below"){lim=(muPlus(a)-tau)/(muMinus(a)-tau);tag="(μ₊−τ)/(μ₋−τ)";}
+    else if(reg==="above"){lim=(tau-muMinus(a))/(tau-muPlus(a));tag="(τ−μ₋)/(τ−μ₊)";}
+    else{const upper=reg==="upper edge";lim=(upper?4*muMinus(a)**2:4*muPlus(a)**2)/(PI*PI)*(N+tau)**2;tag=`4μ${upper?'₋':'₊'}²/π² · (N+τ)²`;}
+    const isOut=reg==="below"||reg==="above";
+    $("verdict").innerHTML=isOut?T("v_out")({reg:T("regv")[reg],tag,lim:lim.toFixed(4)}):T("v_edge")({reg:T("regv")[reg],tag});
+    $("kact").textContent=big(k);$("kacttag").textContent=T("tag_sig")(mx.toFixed(4),mn.toFixed(5));
+    $("kpred").textContent=big(lim);$("kpredtag").textContent=isOut?T("tag_bound")(tag):tag;
+    $("kratio").textContent=(k/lim).toFixed(4);
+    drawLadder(al,be,N,false,null);
+  }
+  scheduleKN();scheduleKT();
+}
+
+/* ============================================================ cross-check */
+$("xcheck").addEventListener("click",()=>{
+  const N=Math.min(S.N,72),a=S.a,tau=S.tau;const Mx=[];
+  for(let i=0;i<N;i++){const r=[];for(let j=0;j<N;j++)r.push((i===j?1:Math.pow(a,Math.abs(i-j)))-(i===j?tau:0));Mx.push(r);}
+  const t0=performance.now();const j=jacobiEig(Mx);const t1=performance.now();
+  const q=spectrum(N,a,tau).slice().sort((x,y)=>x-y);let md=0;for(let i=0;i<N;i++)md=Math.max(md,Math.abs(j[i]-q[i]));
+  $("xout").innerHTML=T("xres")({N,capped:S.N>72,md:md.toExponential(2),kj:big(kappaOf(j).k),kq:big(kappaOf(q).k),ms:(t1-t0).toFixed(0)});
+});
+
+/* ============================================================ wire */
+aEl.addEventListener("input",()=>{const t=parseFloat(tEl.value);S.a=parseFloat(aEl.value);S.tau=tauFromT(S.a,t);S.N=parseInt(nEl.value);clearPreset();render();});
+tEl.addEventListener("input",()=>{setFromSliders();clearPreset();render();});
+nEl.addEventListener("input",()=>{S.N=parseInt(nEl.value);if(!S.exact)setFromSliders();render();});
+
+applyStatic();
+(function(){const p=PRESETS["hollow-gold"]();const inv=inverse(p.alpha,p.beta);S.a=inv.a;S.tau=inv.tau;S.N=p.N;S.exact={alpha:p.alpha,beta:p.beta};activePreset="hollow-gold";pushToSliders();render();})();
+</script>
+</body>
+</html>

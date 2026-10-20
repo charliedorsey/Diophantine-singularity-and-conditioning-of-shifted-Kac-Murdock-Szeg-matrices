@@ -1,0 +1,13 @@
+# Lean / Lake generated build and dependency files
+.lake/
+lean_project/.lake/
+*.olean
+*.ilean
+*.trace
+*.c
+*.o
+
+# macOS and editor artifacts
+.DS_Store
+*~
+*.swp

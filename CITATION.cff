@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices — Lean 4 formalization and interactive companion"
+message: "If you use this software, please cite the companion record when available and the accompanying research preprint (DOI 10.5281/zenodo.23486307)."
+type: software
+authors:
+  - given-names: Charlie
+    family-names: Dorsey
+version: "3.4.0"
+date-released: "2026-10-19"
+license: Apache-2.0
+abstract: >-
+  Reproducible Lean 4 formalization and offline reading and interactive
+  companion to the independently archived shifted KMS research preprint.
+  Includes pinned Lean/Mathlib source, 28 paper-result counterparts, proof
+  navigation, a children's essay, and an original numerical explorer.
+keywords:
+  - Lean 4
+  - Mathlib
+  - formal verification
+  - Kac-Murdock-Szego matrices
+  - spectral conditioning
+  - Diophantine approximation
+references:
+  - type: article
+    title: "Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices"
+    authors:
+      - given-names: Charlie
+        family-names: Dorsey
+    doi: 10.5281/zenodo.23486307
+    year: 2026

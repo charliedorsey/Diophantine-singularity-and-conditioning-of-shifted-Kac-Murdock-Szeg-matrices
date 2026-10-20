@@ -1,0 +1,19 @@
+Copyright © 2026 Charlie Dorsey.
+
+This is a mixed-license research software and scholarly-content archive.
+The exact permissions are specified in LICENSE.md and the files there referenced.
+
+Original software source (Lean files in lean_project/, accompanying generated
+Lean source HTML insofar as it reproduces that code, and executable JavaScript
+in the interactive explorer): Apache License, Version 2.0 (Apache-2.0).
+
+Manuscript PDF and TeX, original explanatory website text, proof guide,
+children's essay, accompanying authored figures, and other non-code content:
+Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+The embedded manuscript is also separately archived under CC BY 4.0 at
+https://doi.org/10.5281/zenodo.23486307.
+
+Mathlib and Lean dependencies are NOT bundled. They remain subject to the
+licenses of their respective rightsholders and are fetched for compilation.
+All licenses are subject to rights held by their respective contributors.

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 410" role="img" aria-labelledby="title desc">
+<title id="title">Five regimes of shifted KMS conditioning</title>
+<desc id="desc">Five successive regions in the fixed spectral level tau: below the lower band edge bounded conditioning, at the lower edge quadratic growth, inside the band arithmetic spikes, at the upper edge quadratic growth, and above the upper band edge bounded conditioning.</desc>
+<rect width="1040" height="410" rx="24" fill="#173a45"/>
+<text x="36" y="48" font-family="sans-serif" font-size="13" letter-spacing="2" fill="#f5c28a" font-weight="700">CONDITIONING ACROSS THE SYMBOL BAND</text>
+<text x="36" y="88" fill="#f8f7ee" font-family="Georgia,serif" font-size="27">Five positions for the fixed level τ</text>
+<g font-family="sans-serif" font-size="18" text-anchor="middle">
+<rect x="30" y="120" width="182" height="207" rx="13" fill="#e9f1ed"/>
+<rect x="224" y="120" width="182" height="207" rx="13" fill="#f5e6cf"/>
+<rect x="418" y="120" width="204" height="207" rx="13" fill="#fff6e8"/>
+<rect x="634" y="120" width="182" height="207" rx="13" fill="#f5e6cf"/>
+<rect x="828" y="120" width="182" height="207" rx="13" fill="#e9f1ed"/>
+<g fill="#284755">
+<text x="121" y="154" font-weight="700" font-size="15">BELOW BAND</text>
+<text x="315" y="154" font-weight="700" font-size="15">LOWER EDGE</text>
+<text x="520" y="154" font-weight="700" font-size="15">INSIDE BAND</text>
+<text x="725" y="154" font-weight="700" font-size="15">UPPER EDGE</text>
+<text x="919" y="154" font-weight="700" font-size="15">ABOVE BAND</text>
+<text x="121" y="196" font-size="19">τ &lt; μ₋</text>
+<text x="315" y="196" font-size="19">τ = μ₋</text>
+<text x="520" y="196" font-size="19">μ₋ &lt; τ &lt; μ₊</text>
+<text x="725" y="196" font-size="19">τ = μ₊</text>
+<text x="919" y="196" font-size="19">τ &gt; μ₊</text>
+</g>
+<g fill="#166570" font-size="22" font-weight="700">
+<text x="121" y="250">Bounded</text>
+<text x="919" y="250">Bounded</text>
+</g>
+<g fill="#aa602b" font-size="22" font-weight="700"><text x="315" y="250">Quadratic</text><text x="725" y="250">Quadratic</text></g>
+<text x="520" y="250" fill="#b3542b" font-weight="700" font-size="22">Arithmetic spikes</text>
+<g fill="#4c606a" font-size="15">
+<text x="121" y="287">finite limit</text><text x="315" y="287">order N²</text>
+<text x="520" y="287">set by distance to ℤ</text>
+<text x="725" y="287">order N²</text><text x="919" y="287">finite limit</text>
+</g>
+</g>
+<path d="M55 354 H985" stroke="#a5bdba" stroke-width="2"/>
+<path d="M974 347 L985 354 L974 361" fill="none" stroke="#a5bdba" stroke-width="2"/>
+<g fill="#d7e9e2" font-family="sans-serif" font-size="14"><text x="59" y="383">smaller τ</text><text x="985" y="383" text-anchor="end">larger τ</text></g>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 930" role="img" aria-labelledby="title desc">
+<title id="title">Five regimes of shifted KMS conditioning</title>
+<desc id="desc">For tau below the lower band edge conditioning remains bounded, at either band edge it grows quadratically, within the band arithmetic spikes occur, and above the upper band edge conditioning stays bounded.</desc>
+<rect width="520" height="930" rx="22" fill="#173b46"/>
+<text x="28" y="42" fill="#f2c38d" font-size="15" font-family="sans-serif" letter-spacing="1.5" font-weight="700">THE SPECTRAL BAND</text>
+<text x="28" y="78" fill="#f7f5ec" font-size="25" font-family="Georgia,serif">Five conditioning regimes</text>
+<g font-family="sans-serif">
+<rect x="28" y="116" width="464" height="128" rx="13" fill="#eaf3ef"/>
+<text x="49" y="147" fill="#254e59" font-size="16" font-weight="700">01 · BELOW THE BAND</text>
+<text x="49" y="188" fill="#35565d" font-size="21">τ &lt; μ₋</text>
+<text x="471" y="188" fill="#146a76" text-anchor="end" font-size="23" font-weight="700">Bounded</text>
+<text x="49" y="224" fill="#63787c" font-size="15">Finite conditioning limit</text>
+<rect x="28" y="259" width="464" height="128" rx="13" fill="#f8e6cf"/>
+<text x="49" y="290" fill="#6c523e" font-size="16" font-weight="700">02 · LOWER BAND EDGE</text>
+<text x="49" y="331" fill="#7d5942" font-size="21">τ = μ₋</text>
+<text x="471" y="331" fill="#a85a2e" text-anchor="end" font-size="23" font-weight="700">Quadratic</text>
+<text x="49" y="367" fill="#826e5b" font-size="15">Growth proportional to N²</text>
+<rect x="28" y="402" width="464" height="128" rx="13" fill="#fff5e7"/>
+<text x="49" y="433" fill="#6c523e" font-size="16" font-weight="700">03 · INSIDE THE BAND</text>
+<text x="49" y="471" fill="#78543c" font-size="20">μ₋ &lt; τ &lt; μ₊</text>
+<text x="49" y="504" fill="#b4522b" font-size="23" font-weight="700">Arithmetic spikes</text>
+<rect x="28" y="545" width="464" height="128" rx="13" fill="#f8e6cf"/>
+<text x="49" y="576" fill="#6c523e" font-size="16" font-weight="700">04 · UPPER BAND EDGE</text>
+<text x="49" y="617" fill="#7d5942" font-size="21">τ = μ₊</text>
+<text x="471" y="617" fill="#a85a2e" text-anchor="end" font-size="23" font-weight="700">Quadratic</text>
+<text x="49" y="653" fill="#826e5b" font-size="15">Growth proportional to N²</text>
+<rect x="28" y="688" width="464" height="128" rx="13" fill="#eaf3ef"/>
+<text x="49" y="719" fill="#254e59" font-size="16" font-weight="700">05 · ABOVE THE BAND</text>
+<text x="49" y="760" fill="#35565d" font-size="21">τ &gt; μ₊</text>
+<text x="471" y="760" fill="#146a76" text-anchor="end" font-size="23" font-weight="700">Bounded</text>
+<text x="49" y="796" fill="#63787c" font-size="15">Finite conditioning limit</text>
+</g>
+<path d="M43 859 H471 M460 851 L471 859 L460 867" fill="none" stroke="#add1c8" stroke-width="2.3"/>
+<text x="43" y="887" fill="#e5f2ed" font-size="15" font-family="sans-serif">Smaller τ</text>
+<text x="471" y="887" fill="#e5f2ed" font-size="15" text-anchor="end" font-family="sans-serif">Larger τ</text>
+</svg>

@@ -1,0 +1,260 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>One sine, two numbers — for curious readers</title><meta name="description" content="A younger-reader introduction to shifted KMS matrices, echoes, and arithmetic clocks."><link rel="stylesheet" href="assets/style.css"></head><body><a class="skip" href="#main">Skip to main content</a><header class="masthead compact"><div class="container"><div class="eyebrow">Shifted KMS matrices · optional reading</div><h1>One sine, two numbers</h1><p class="deck">Echoes, a jumping clock hand, and a mathematical machine that sometimes goes blind.</p></div></header><nav class="topnav" aria-label="Reader navigation"><div class="container nav-inner"><a href="index.html">Overview</a><a href="proof_guide.html">Proof guide</a><a href="theorems.html">Theorem atlas</a><a href="for_curious_readers.html" class="active" aria-current="page">Curious readers</a></div></nav><main id="main" class="container"><article class="paper-card reader-essay"><div class="section-tag">A different doorway</div><p class="small-note">This is a friendly explanatory essay, not a replacement for the precise theorem statements in the <a href="../manuscript/shifted_kms.pdf">research paper</a>. The <a href="https://charliedorsey.com/research/one-sine-two-numbers/">interactive model</a> provides numerical illustrations; it cannot establish exact or infinite statements.</p><details><summary><strong>Browse the chapters</strong> · 13 sections and glossary</summary><ol class="chapter-nav"><li><a href="#chapter-1">1. The echo table</a></li><li><a href="#chapter-2">2. Turning the volume down</a></li><li><a href="#chapter-3">3. The dial</a></li><li><a href="#chapter-4">4. One wave</a></li><li><a href="#chapter-5">5. The clock</a></li><li><a href="#chapter-6">6. Footprints</a></li><li><a href="#chapter-7">7. A hand that never repeats</a></li><li><a href="#chapter-8">8. The map</a></li><li><a href="#chapter-9">9. The starting line</a></li><li><a href="#chapter-10">10. Touchiness</a></li><li><a href="#chapter-11">11. Five kinds of weather</a></li><li><a href="#chapter-12">12. The lottery, and the dart</a></li><li><a href="#chapter-13">13. What the paper does and doesn&#x27;t claim</a></li><li><a href="#chapter-14">Glossary</a></li></ol></details>
+<p><em>A plain-language guide to a paper about a machine that sometimes goes blind, a clock that decides when, and how twitchy the machine gets right before.</em></p>
+<hr />
+<h2 id="chapter-0">Before we start</h2>
+<p>This is a guide to a real math paper: <em>Diophantine singularity and conditioning of shifted Kac–Murdock–Szegő matrices</em>. The paper is 20 pages and dense with symbols. This guide keeps a few of the symbols, because you'll meet them again on the paper's interactive page and it's better to know them than to be scared of them, but every one of them gets a plain word first.</p>
+<p>What you need: fractions, remainders, the idea of an angle as a fraction of a full turn, and the patience to read a small grid of numbers. That's it. You can follow the main ideas with those tools; some of the later details are a stretch, and that is perfectly fine.</p>
+<p>One warning about the shape of the thing. This is not a mystery with a twist at the end. It's a chart. Someone built a machine, noticed it went blind at certain sizes, and asked <em>exactly which sizes, and how close does it come when it misses?</em> The answer turns out to be a clock with two numbers on it. Once you see the clock, everything else is reading it.</p>
+<h2 id="chapter-1">1. The echo table</h2>
+<p>Put N chairs in a row. Whisper into chair 1. Chair 2 hears you at some volume <em>a</em>, a number between 0 and 1. Chair 3 hears you at <em>a</em> × <em>a</em>. Chair 4 hears you at <em>a</em> × <em>a</em> × <em>a</em>. Every chair also hears itself at full volume, which we'll call 1.</p>
+<p>Write down how loud every chair hears every other chair and you get a square grid. Mathematicians call it a <strong>Kac–Murdock–Szegő matrix</strong> (three names, one grid). We'll call it the <strong>echo table</strong>, and <em>a</em> is the <strong>fade</strong>: how much an echo loses with each chair it passes.</p>
+<p>Here's the whole echo table for four chairs with fade ½:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>chair 1</th>
+<th>chair 2</th>
+<th>chair 3</th>
+<th>chair 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>chair 1</strong></td>
+<td>1</td>
+<td>½</td>
+<td>¼</td>
+<td>⅛</td>
+</tr>
+<tr>
+<td><strong>chair 2</strong></td>
+<td>½</td>
+<td>1</td>
+<td>½</td>
+<td>¼</td>
+</tr>
+<tr>
+<td><strong>chair 3</strong></td>
+<td>¼</td>
+<td>½</td>
+<td>1</td>
+<td>½</td>
+</tr>
+<tr>
+<td><strong>chair 4</strong></td>
+<td>⅛</td>
+<td>¼</td>
+<td>½</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>The rule for any cell: <em>a</em> raised to the power of the distance between the two chairs. That's the entire object. One fade, one size, and the table is fixed.</p>
+<p>This table isn't a toy. It's how statisticians describe things that fade: how much yesterday's weather predicts today's, and today's predicts tomorrow's, and so on down the line. Related patterns are used in signal processing, statistics and other settings where nearby observations are correlated.</p>
+<p>Now think of the table as a <strong>machine</strong>. You feed it a list of N numbers, one per chair. Each chair takes every number it can hear, at the volume it hears it, and adds them up. Out comes a new list of N numbers. Table in, list in, list out.</p>
+<h2 id="chapter-2">2. Turning the volume down</h2>
+<p>Here's the paper's move. Take the echo table and subtract the same number, call it <strong>τ</strong> (tau), from every chair's <em>own</em> volume. Every diagonal 1 becomes 1 − τ. Nothing else changes. One knob, turned the same amount for every chair.</p>
+<p>Then ask: <strong>for which sizes N does this machine go blind?</strong></p>
+<p>&quot;Blind&quot; has a precise meaning. A machine is blind if there's some non-zero input that comes out as all zeros. It crushes something to nothing. Once that happens, you can't run the machine backwards, because two different inputs (the crushed one, and the crushed one plus anything) give the same output.</p>
+<p>Let's watch it happen. Fade ½, turn-down 3/2, two chairs. The echo table is</p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th>½</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>½</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>and after subtracting 3/2 from each diagonal it's</p>
+<table>
+<thead>
+<tr>
+<th>−½</th>
+<th>½</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>½</td>
+<td>−½</td>
+</tr>
+</tbody>
+</table>
+<p>Feed it the input (1, 1). Chair 1 computes −½ × 1 + ½ × 1 = 0. Chair 2 computes ½ × 1 − ½ × 1 = 0. Output: (0, 0). The two-chair machine with this fade and this turn-down is blind. You just proved it.</p>
+<p>Now try three chairs, same fade, same turn-down. The table is</p>
+<table>
+<thead>
+<tr>
+<th>−½</th>
+<th>½</th>
+<th>¼</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>½</td>
+<td>−½</td>
+<td>½</td>
+</tr>
+<tr>
+<td>¼</td>
+<td>½</td>
+<td>−½</td>
+</tr>
+</tbody>
+</table>
+<p>and this one is <em>not</em> blind; no non-zero input gets crushed. Four chairs? Not blind. Five? Not blind. In fact, for this fade and turn-down, the machine is blind at exactly one size, two chairs, and never again, no matter how big you build it.</p>
+<p>Why two, and why only two? For a different fade and turn-down, is it never, or forever, or once? That question is the paper.</p>
+<h2 id="chapter-3">3. The dial</h2>
+<p>Before the clock, one fact about what the machine can and can't do.</p>
+<p>The echo table, if you let it run forever in both directions, can only produce volumes in a certain range. For fade <em>a</em>, the range runs from</p>
+<p><strong>μ₋ = (1 − a) ⁄ (1 + a)</strong>  up to  <strong>μ₊ = (1 + a) ⁄ (1 − a).</strong></p>
+<p>For fade ½ that's from ⅓ to 3. Call this range <strong>the dial</strong>. A finite table, any size, produces volumes strictly inside the dial, never touching the ends.</p>
+<p>Now one word you'll see everywhere on the paper's page, defined once. An <strong>eigenvalue</strong> is a volume the machine can produce without changing the <em>shape</em> of an input: some list goes in and comes out as the same list, just multiplied by that volume. Every N-chair machine has exactly N of them, and they all sit inside the dial.</p>
+<p>Turning every chair down by τ just subtracts τ from all N eigenvalues. So the turned-down machine is blind exactly when τ was one of the original eigenvalues, exactly, on the nose. And that gives the first clean fact:</p>
+<p><strong>If τ is off the dial, the machine can never go blind, at any size.</strong> There's nothing to hit.</p>
+<p>So the interesting case is τ inside the dial. From here on assume it is.</p>
+<h2 id="chapter-4">4. One wave</h2>
+<p>There is a single number that tells you whether an N-chair machine is blind: its <strong>determinant</strong>. If the determinant is zero, the machine is blind; if not, it isn't. We'll call it the <strong>blind-test number</strong>.</p>
+<p>Computing a determinant the textbook way is brutal. For a 10-chair table you'd add up 3,628,800 products. For 20 chairs, more than two quintillion.</p>
+<p>The paper proves that for this machine, the blind-test number is</p>
+<p><strong>(a bunch of stuff that is never zero) × sin π(Nα − β).</strong></p>
+<p>That's it. All those quintillions of products collapse to one sine wave. And a sine is zero only at the whole-number turns, so:</p>
+<p><strong>The N-chair machine is blind exactly when Nα − β is a whole number.</strong></p>
+<p>Two new numbers appeared, and they're the whole story. Both are computed from the fade <em>a</em> and the turn-down τ.</p>
+<p><strong>α</strong> (alpha) is <em>where τ sits on the dial, measured as an angle.</em> Picture the dial bent into a half-circle: μ₊ at one end, μ₋ at the other. τ is somewhere along it. α is how far along, as a fraction of the half-turn. Near μ₊ means α near 0; near μ₋ means α near 1. Right in the middle of the dial, in a sense we'll see, is α = ½.</p>
+<p><strong>β</strong> (beta) is a second angle that comes out of the same spot on the dial through a mirror trick. The paper gets it from a factor called a <em>Blaschke factor</em>, which is a rule for reflecting the inside of a circle onto itself; you don't need the machinery, you need to know that β is also a number between 0 and 1, also fixed once <em>a</em> and τ are fixed, and that it is <em>not</em> the same as α except in one special case coming up in section 9.</p>
+<p>Here's the part that makes the paper a chart and not a sketch. The map from (fade, turn-down) to (α, β) runs <em>backwards</em> too, by formulas you can write on one line:</p>
+<p><strong>τ = sin πβ ⁄ sin πα</strong>      <strong>a = cos ½π(α + β) ⁄ cos ½π(α − β)</strong></p>
+<p>So (α, β) is a complete address. Give me the two angles and I hand you back the fade and the turn-down. Nothing is lost in translation.</p>
+<h2 id="chapter-5">5. The clock</h2>
+<p>Now we can stop talking about matrices.</p>
+<p>Picture a clock with one hand. At tick 0 the hand points straight up. Every tick, it jumps forward by <strong>α turns</strong>. If α = ¼, it jumps a quarter turn each tick and comes back to the top every 4 ticks. If α = 0.381966…, it jumps a little over a third of a turn each tick and never comes back to exactly the top, ever.</p>
+<p>Now paint a <strong>target</strong> on the rim, at <strong>β turns</strong> around from the top.</p>
+<p>Tick N puts the hand at N × α turns, and we only care where it points, so we throw away whole turns and keep the remainder. The hand lands on the target when that remainder equals β, which is exactly when Nα − β is a whole number.</p>
+<p><strong>The N-chair machine is blind exactly when the hand lands on the target at tick N.</strong></p>
+<p>That's the paper's Theorem 4 (they call it &quot;singularity criterion&quot;). The whole question of section 2 has become: <em>at which ticks does a jumping hand land on a painted dot?</em></p>
+<p>When it misses, we'll want to know by how much. The <strong>near-miss distance</strong> at tick N, which the paper calls <em>d_N</em>, is how far the hand is from the target measured the short way round the rim, so it's always between 0 and ½ of a turn. Landing exactly means near-miss 0.</p>
+<p>Go back to the fade ½, turn-down 3/2 example. The angles come out α = 0.23005… and β = 0.46011…, and you might notice β is exactly 2α. So at tick 2 the hand is at 2α = β. Landed. Blind. That's why two chairs.</p>
+<blockquote>
+<p><strong>Big idea so far.</strong> Take a fading-echo table, turn every chair down by the same amount, and ask when the machine goes blind. The answer is a clock: a hand with stride α, a target at β, and the machine is blind at tick N exactly when the hand lands on the target. Both α and β are computed from the fade and the turn-down, and the computation runs backwards, so the pair (α, β) is a full address.</p>
+</blockquote>
+<h2 id="chapter-6">6. Footprints</h2>
+<p>Everything now depends on one question about the stride: <strong>is α a fraction?</strong></p>
+<p>Say α = 1⁄5. The hand visits five positions, 0, 1⁄5, 2⁄5, 3⁄5, 4⁄5, and then walks them again forever. Call those its <strong>footprints</strong>. A hand with a fraction stride <em>p</em>⁄<em>q</em> (in lowest terms) leaves exactly <em>q</em> footprints, evenly spaced, and repeats every <em>q</em> ticks.</p>
+<p>Now there are two cases, and they're completely different.</p>
+<p><strong>The target is on a footprint.</strong> Then the hand lands on it once every <em>q</em> ticks, forever. The machine is blind on a whole residue class of sizes: N ≡ something (mod <em>q</em>), and it never stops. The paper's example: stride 1⁄5, target 3⁄5. Those angles come from fade (3 − √5)⁄2 ≈ 0.382 and turn-down φ = (1 + √5)⁄2 ≈ 1.618, the golden ratio. The hand hits the target at ticks 3, 8, 13, 18, 23, … , every N that leaves remainder 3 when divided by 5. Infinitely many blind sizes, on a perfect drumbeat.</p>
+<p><strong>The target is between footprints.</strong> Then the hand walks right past it every time, forever, and the machine is <em>never</em> blind, even though the stride is a plain fraction and the hand keeps repeating itself. The paper's example: stride 1⁄3, target ½. Footprints at 0, ⅓, ⅔. The target at ½ is in the gap. Never blind, at any size. That address comes from fade 2 − √3 ≈ 0.268 and turn-down 2⁄√3 ≈ 1.155.</p>
+<p>The test for which case you're in is one multiplication. Is <em>q</em> × β a whole number? For the first example, 5 × 3⁄5 = 3, yes. For the second, 3 × ½ = 1.5, no. The paper calls the yes case <strong>compatible</strong> and the no case <strong>incompatible</strong>, and it points out something the earlier work on these tables had missed: a rational angle does <em>not</em> mean the machine will eventually go blind. It means the hand repeats. Whether it repeats <em>onto the target</em> is a second, separate question.</p>
+<h2 id="chapter-7">7. A hand that never repeats</h2>
+<p>Now say the stride α is <em>not</em> a fraction. (Most numbers aren't. Numbers like √2 and the golden ratio can't be written as one whole number over another, and they're the rule, not the exception.)</p>
+<p>Then the hand never lands on the same spot twice. Can it still land on the target?</p>
+<p>Yes, but at most once. Here's the proof, and it fits in one breath. Suppose it landed on the target at tick M and again at some later tick N. Then Nα and Mα both differ from β by whole numbers, so (N − M)α is a whole number. Divide by (N − M) and α is a fraction. But we said it wasn't. So there's no second landing.</p>
+<p>So a never-repeating hand gives the machine at most one blind size. Ever. That's the fade ½, turn-down 3⁄2 machine: blind at two chairs, then clean forever.</p>
+<p>And usually not even once. If you close your eyes and throw a dart at the rim to choose the target, the set of spots the hand will ever visit is a list you can count: tick 1, tick 2, tick 3, … . A countable list of points on a rim has no area. The dart hits it with probability zero. So a randomly chosen target is never landed on.</p>
+<p>Put sections 6 and 7 together and you get the paper's Theorem 6:</p>
+<p><strong>The number of blind sizes is 0, or 1, or forever. Nothing else is possible.</strong></p>
+<p>And then a fact that stops you from getting comfortable: the paper proves that all three kinds of address are scattered everywhere. Pick any small region of the map, as small as you like, and it contains a &quot;never&quot; address, a &quot;once&quot; address, and a &quot;forever&quot; address. There is no safe neighborhood. The &quot;never&quot; addresses take up all the area, but the other two are woven through them everywhere.</p>
+<h2 id="chapter-8">8. The map</h2>
+<p>Now draw the addresses. Stride α across, from 0 to 1. Target β up, from 0 to 1. It turns out that only the addresses with α + β less than 1 correspond to real fades and turn-downs, so the map is a triangle: the bottom-left half of the square.</p>
+<p>Every fade between 0 and 1, and every turn-down inside that fade's dial, lands at exactly one point in this triangle, and every point in the triangle comes from exactly one (fade, turn-down). That's what the backwards formulas in section 4 buy you.</p>
+<p>The blind condition, Nα − β = a whole number, is the equation of a straight line: β = Nα − (whole number). So for each tick N there's a small family of parallel lines cutting across the triangle, and the machine at size N is blind exactly on those lines. The paper calls this the <strong>affine web</strong>. On the paper's interactive page the lines for N = 2 through 9 are drawn faintly and the current N in red, and you can drag a point around and watch which lines you're on.</p>
+<p>A few landmarks, so the map reads right:</p>
+<ul>
+<li>The long diagonal edge, α + β = 1, is fade → 0. No echoes at all; every chair hears only itself.</li>
+<li>The top corner (α → 0, β → 1) is τ at the top of the dial. The right corner (α → 1, β → 0) is τ at the bottom of the dial.</li>
+<li>The two straight legs of the triangle are fade → 1, echoes that never die out.</li>
+<li>And one special line runs from the bottom-left corner toward the middle of the hypotenuse: β = α. That's the next section.</li>
+</ul>
+<h2 id="chapter-9">9. The starting line</h2>
+<p>What if you turn every chair down by exactly 1? Then every chair's own volume becomes 0. It hears everyone else, but not itself. The paper calls this the <strong>hollow</strong> table, and it was the subject of an earlier paper by the same author.</p>
+<p>On the map, τ = 1 is the line <strong>β = α</strong>. The target is painted exactly where the hand lands after <em>one</em> tick. The target is the hand's first footprint. We'll call it <strong>the starting line</strong>.</p>
+<p>Three things happen on the starting line, and they all make sense once you see the picture.</p>
+<p>First, the one-chair hollow machine is blind for free. One chair, own volume turned down to 0, is the number 0, and 0 crushes everything. On the clock: at tick 1 the hand is at α, the target is at α, landed. In the paper's language, the τ = 1 line <em>is</em> the N = 1 line of the affine web.</p>
+<p>Second, the near-miss at tick N is just &quot;how close did the hand get to where it was after tick 1,&quot; which is the same as &quot;how close did the hand get to the top after N − 1 ticks.&quot; That's a question people have studied for two hundred years, called <em>rational approximation</em>: how close can N − 1 copies of a stride get to a whole number of turns? And the answer is known. Some strides get close fast (bad for the machine). One stride gets close slowest of all.</p>
+<p>Third, that slowest stride is <strong>1⁄φ² ≈ 0.381966</strong>, a cousin of the golden ratio. It's the most stubborn number there is at avoiding whole turns; a theorem of Hurwitz from 1891 says nothing beats it. The earlier paper found that with this stride the hollow machine's touchiness (next section) has the gentlest worst case of any fade, and its near-misses arrive on a schedule: sizes 3, 4, 6, 9, 14, 22, 35, 56, 90, 145, … , one more than the Fibonacci numbers. Call it <strong>the stubborn stride</strong>.</p>
+<p>That earlier paper's headline was, more or less, <em>the golden number is the safest fade.</em></p>
+<p>It was the safest fade on one road.</p>
+<p>Step off the starting line and the target is no longer the first footprint. It's a second number, chosen independently. And when the target is a free second number, section 12 says what happens to the golden protection. It doesn't survive.</p>
+<blockquote>
+<p><strong>Big idea so far.</strong> A hand with a fraction stride leaves footprints; the machine is blind forever if the target is on one, and never if it's between them. A hand with a non-fraction stride lands at most once, and on a random target, never. So blind sizes come in exactly three flavors, 0, 1, forever, and every flavor is found in every corner of the map. The famous hollow table is the one line where the target is the hand's own first footprint, and everything that seemed special about it is that line read off the general map.</p>
+</blockquote>
+<h2 id="chapter-10">10. Touchiness</h2>
+<p>Blind is the extreme. The everyday question is: when the machine <em>isn't</em> blind, how close did it come, and what does that cost?</p>
+<p>The cost has a name: the <strong>condition number</strong>, written κ (kappa). Here's what it measures. Suppose you run the machine backwards, from output to input, which is what you do whenever you solve equations. If the output you were given is off by 1%, because of measurement error or rounding, the input you recover can be off by up to κ%. Touchiness. A machine with κ = 3 is calm: small mistakes in, small mistakes out. A machine with κ = 3,000 amplifies every wobble three thousand times.</p>
+<p>Touchiness is (the biggest volume the machine produces) divided by (the smallest volume it produces, ignoring sign). The biggest is about the width of the dial from τ, and it barely changes with N. The smallest is <strong>the closest approach</strong>: the nearest any eigenvalue comes to zero, which is the nearest the machine comes to blind.</p>
+<p>The paper's main theorem gives the closest approach exactly, to leading order:</p>
+<p><strong>closest approach ≈ π × (steepness of the dial at τ) × (near-miss distance) ÷ (N + τ)</strong></p>
+<p>Every piece has a job.</p>
+<ul>
+<li><strong>Near-miss distance</strong> <em>d_N</em> is the clock. The closer the hand got to the target at tick N, the closer the machine is to blind.</li>
+<li><strong>Steepness of the dial</strong> is how fast the volume changes as you move the hand. If the dial is steep where τ sits, a small miss in <em>position</em> is a big miss in <em>volume</em>, which is good for the machine. The paper calls this γ (gamma) and gives it as a formula in <em>a</em>, τ, and α.</li>
+<li><strong>N + τ</strong> is the sweep speed: with more chairs, the eigenvalues crowd closer together, so the hand has to land closer to the target to leave the same gap. The paper is pleased to note the +τ is exact, not approximate; it comes from the mirror trick.</li>
+</ul>
+<p>Divide the dial's width by that and you get touchiness:</p>
+<p><strong>κ ≈ C(a, τ) × (N + τ) ÷ d_N</strong></p>
+<p>where C is a constant that depends only on the fade and the turn-down. Touchiness is a fixed number times N, divided by the near-miss. Mostly it grows like N. When the hand nearly lands, it spikes.</p>
+<p>A real number, from the paper's interactive page. Stubborn stride on the starting line, 56 chairs. The near-miss is 0.0081 turns (55 is a Fibonacci number, so this is one of the scheduled close calls). The closest approach is 0.00035. Touchiness, computed by finding every eigenvalue: <strong>3,245</strong>. Touchiness from the one-line formula: <strong>3,262</strong>. Within half a percent, and the gap shrinks as N grows.</p>
+<h2 id="chapter-11">11. Five kinds of weather</h2>
+<p>Now hold the fade fixed and slide the turn-down τ from below the dial, across it, and out the top. The paper's Theorem 1 says the touchiness passes through five regimes, and each one has its own exact formula.</p>
+<p><strong>Below the dial.</strong> τ is less than μ₋. Every eigenvalue minus τ is positive; nothing can reach zero. Touchiness settles down to a fixed number, (μ₊ − τ) ⁄ (μ₋ − τ), and stays there no matter how many chairs you add. Calm.</p>
+<p><strong>At the bottom of the dial.</strong> τ = μ₋ exactly. Now the hand is at the far end of its half-turn, where the dial goes <em>flat</em>: moving the hand a little barely changes the volume. Flat dial means the steepness γ from section 10 is zero, so the linear formula breaks. What replaces it is quadratic: touchiness grows like a constant times (N + τ)². The constant is 4μ₊² ⁄ π².</p>
+<p><strong>Inside the dial.</strong> The clock. Touchiness is C × (N + τ) ÷ d_N, spiking whenever the hand nearly lands.</p>
+<p><strong>At the top of the dial.</strong> τ = μ₊ exactly. The mirror image of the bottom: flat dial, quadratic growth, constant 4μ₋² ⁄ π². For fade ½ and 120 chairs that predicts 681; the computed value is 682.</p>
+<p><strong>Above the dial.</strong> τ is more than μ₊. Every eigenvalue minus τ is negative. Calm again, settling to (τ − μ₋) ⁄ (τ − μ₊).</p>
+<p>If you sweep τ on the paper's page, the picture is unmistakable: flat, then a wall climbing like N², then a forest of spikes, then a wall, then flat. The forest is the triangle. Every spike in it is a near-miss on the clock.</p>
+<h2 id="chapter-12">12. The lottery, and the dart</h2>
+<p>Two last results, and they're the ones that change the story.</p>
+<p><strong>The lottery.</strong> Take a non-fraction stride and any target, and write down touchiness ÷ N for every size N. The paper proves (Theorem 11) that these numbers behave like lottery tickets. The near-miss distance is spread evenly around the rim in the long run, so touchiness ÷ N is a fixed number divided by an evenly-spread random distance. That's a distribution with a specific name, a <em>Pareto law with tail index 1</em>, and it has a famous property: most tickets are small, a few are enormous, and the enormous ones are so enormous that the <em>average never settles</em>. Buy a thousand tickets and average them; buy a million; the average keeps drifting upward. Touchiness is usually a modest multiple of N, but its average over all sizes is infinite.</p>
+<p>For a fraction stride there's no lottery. The near-miss can only take <em>q</em> different values, one per footprint, so touchiness ÷ N settles onto exactly <em>q</em> fixed numbers and cycles through them. For the stride-⅓, target-½ machine, touchiness ÷ N cycles through just two values, about 0.55 and 1.65, forever.</p>
+<p><strong>The dart.</strong> Now the theorem that undoes section 9's headline.</p>
+<p>On the starting line, the stubborn stride had a guarantee: its near-miss distance never drops below a fixed constant divided by N, so touchiness never grows faster than N². That's Hurwitz. A ceiling.</p>
+<p>Off the starting line, pick any non-fraction stride you like, the stubborn one included. Then throw a dart at the rim to choose the target. A theorem of Kim (2007), building on older work of Cassels and Kurzweil, says this: with probability one, the hand will come closer to the dart's target than <strong>any</strong> rule of the form (constant ÷ N) you care to name, and it will do so infinitely often. Name a constant, however tiny; the hand will eventually beat it, and keep beating it forever.</p>
+<p>So for a random target there is no ceiling. Touchiness still grows &quot;like N²&quot; in the sense that the exponent is 2, but there is no fixed constant C such that touchiness stays below C × N² for all sizes. The paper calls this <strong>exponent 2 but no O(N²) envelope</strong>, and it's the general rule. The golden guarantee only ever existed because the starting line pins the target to the hand's own first footprint, which turns the two-number problem back into a one-number problem.</p>
+<p>The paper is careful about what kind of statement this is. &quot;With probability one&quot; means: for every target except a set of zero area. There <em>are</em> exceptional targets with ceilings, and the paper works out exactly which ones, but if you choose by dart you won't hit them. And it's a statement about all sizes N at once, so no computer sweep up to any finite N can show it. No finite numerical plot can prove this statement.</p>
+<blockquote>
+<p><strong>Big idea so far.</strong> Touchiness is a constant times N divided by the clock's near-miss. Across τ it passes through five weathers: calm, N², clock, N², calm. Inside the dial, for a non-fraction stride, touchiness ÷ N is a lottery whose average never settles. And for a random target, no stride is safe: the hand comes closer than any c⁄N infinitely often. The golden number was the hero of one line.</p>
+</blockquote>
+<h2 id="chapter-13">13. What the paper does and doesn't claim</h2>
+<p>Math papers are careful about the difference between &quot;proved,&quot; &quot;computed,&quot; and &quot;we noticed.&quot; This one keeps three shelves, and also says out loud what it is <em>not</em> claiming, which is rarer than it should be.</p>
+<p><strong>Shelf 1 — proved.</strong> The one-sine formula for the blind-test number. The two-angle address and its backwards formulas. The clock criterion. The 0, 1, forever law, and the fact that all three kinds are found everywhere on the map. The footprint test (compatible or not) for fraction strides. The exact leading formula for the closest approach and touchiness, with the +τ. The five weathers with their constants. The lottery for non-fraction strides and the <em>q</em>-value cycle for fraction strides. The dart theorem's consequence: exponent 2, no envelope. The starting line as the N = 1 member of the web. All of these are theorems about the machine, with proofs.</p>
+<p><strong>Shelf 2 — computed.</strong> The authors examined numerical examples of the formulas: the backwards address to 10⁻¹², the blind-test number against brute force, the closest-approach and touchiness formulas at growing N, both dial edges. The interactive page estimates the eigenvalues numerically as you drag; values close to zero are not certificates of exact singularity. None of this proves anything, and the paper says so; it's there so a reader can catch a typo without redoing the algebra.</p>
+<p><strong>Shelf 3 — not claimed.</strong> The paper says plainly that it did not invent the idea that eigenvalues of these tables approach a point at a rate governed by number theory (Davies and Levitin, 2014). It did not invent the idea that grids like this get touchy because a mesh of points crowds the target (Bogoya, Böttcher, Grudsky and others). It did not invent the number theory it uses about hands and targets (that's a century of work by Kronecker, Cassels, Kurzweil, Kim, and many more). What it claims is the <em>specific</em> chart for <em>this</em> machine: the two-angle address, the +τ, the constant C, the footprint test, the lottery, the exact description of which targets have ceilings, and the recognition that the famous hollow case is one line of a bigger map.</p>
+<p>What it does not claim: any result about fades that aren't real numbers, or anything about <em>how fast</em> the formulas become accurate as τ approaches an edge (they get worse there, and the paper says so).</p>
+<blockquote>
+<p><strong>The whole paper in four sentences.</strong> A fading-echo table, turned down by the same amount at every chair, goes blind exactly when a clock hand with stride α lands on a target at β, and both numbers come from the fade and the turn-down by formulas that run backwards. So blind sizes come in three flavors, none, one, or forever, and every flavor is everywhere. How twitchy the machine gets is a constant times N divided by the clock's near-miss, quadratic at the ends of the dial and calm outside it. The hollow table everyone studied is the one line where the target is the hand's own first step, which is the only reason the golden number ever looked like the hero.</p>
+</blockquote>
+<h2 id="chapter-14">Glossary</h2>
+<p><strong>Echo table (Kac–Murdock–Szegő matrix).</strong> A square grid where chair <em>i</em> hears chair <em>j</em> at volume <em>a</em> raised to the distance between them. One fade, one size.</p>
+<p><strong>Fade (<em>a</em>).</strong> How much an echo loses per chair. A number between 0 and 1.</p>
+<p><strong>Turn-down (τ, tau).</strong> The amount subtracted from every chair's own volume. Same for every chair.</p>
+<p><strong>Machine.</strong> The table acting on a list of numbers: each chair adds up what it hears.</p>
+<p><strong>Blind (singular).</strong> Some non-zero input comes out all zeros. The machine can't be run backwards.</p>
+<p><strong>Blind-test number (determinant).</strong> Zero if and only if the machine is blind.</p>
+<p><strong>Eigenvalue.</strong> A volume the machine can produce without changing the shape of the input. An N-chair machine has N of them. Turning down by τ subtracts τ from each.</p>
+<p><strong>The dial (spectral band).</strong> The range of volumes the infinite table can produce, from μ₋ = (1−a)⁄(1+a) to μ₊ = (1+a)⁄(1−a). Finite tables stay strictly inside it.</p>
+<p><strong>Stride (α, alpha).</strong> How far the clock hand jumps each tick, as a fraction of a turn. It's where τ sits on the dial, as an angle.</p>
+<p><strong>Target (β, beta).</strong> Where the dot is painted on the rim. Computed from the same spot on the dial by a mirror trick (Blaschke factor).</p>
+<p><strong>Address.</strong> The pair (α, β). Every fade-and-turn-down inside the dial has exactly one, and every address gives back exactly one fade-and-turn-down.</p>
+<p><strong>The map (target triangle).</strong> All addresses: α across, β up, α + β less than 1.</p>
+<p><strong>Blind lines (affine web).</strong> For each tick N, the straight lines β = Nα − (whole number). The machine at size N is blind on them.</p>
+<p><strong>Near-miss distance (d_N).</strong> How far the hand is from the target at tick N, the short way round. Between 0 and ½.</p>
+<p><strong>Footprints.</strong> The <em>q</em> spots a fraction stride <em>p</em>⁄<em>q</em> visits before repeating.</p>
+<p><strong>Compatible / incompatible.</strong> For a fraction stride: whether the target sits on a footprint (blind forever) or between them (never blind). The test is whether <em>q</em> × β is a whole number.</p>
+<p><strong>The starting line (τ = 1, the hollow table).</strong> The target is the hand's first footprint, β = α. Every chair's own volume is turned down to exactly zero.</p>
+<p><strong>The stubborn stride (1⁄φ²).</strong> The number hardest to bring back to a whole turn. Hurwitz proved nothing beats it. The hero of the starting line only.</p>
+<p><strong>Closest approach (σ_min).</strong> The smallest volume the machine produces, ignoring sign. How near it is to blind.</p>
+<p><strong>Touchiness (condition number, κ).</strong> Biggest volume over smallest. If the output is off by 1%, the recovered input can be off by κ%.</p>
+<p><strong>Steepness of the dial (γ).</strong> How fast volume changes as the hand moves, at the spot where τ sits. Zero at the ends of the dial.</p>
+<p><strong>Sweep speed (N + τ).</strong> How fast the eigenvalues crowd past the target as N grows. The +τ is exact.</p>
+<p><strong>The lottery (Pareto law).</strong> For a non-fraction stride, touchiness ÷ N is usually small, sometimes enormous, and its average never settles.</p>
+<p><strong>The dart (almost every β).</strong> A target chosen at random. With probability one it has no ceiling: the hand gets closer than any c⁄N, infinitely often.</p>
+<p><strong>Envelope.</strong> A fixed ceiling C × N² on touchiness for all N. The stubborn stride has one on the starting line. A dart-chosen target has none.</p>
+</article></main><footer class="pagefooter"><a href="index.html">Back to the scholarly companion</a> · Charlie Dorsey</footer></body></html>

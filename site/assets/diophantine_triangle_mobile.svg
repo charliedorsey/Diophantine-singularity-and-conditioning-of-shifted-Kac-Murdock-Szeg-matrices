@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 790" role="img" aria-labelledby="title desc">
+<title id="title">Parameter triangle and exact singularity</title>
+<desc id="desc">Alpha and beta range over the open triangle with alpha positive, beta positive, and alpha plus beta less than one. The orange diagonal beta equals alpha marks the hollow case. Exact singularity holds when N alpha minus beta is an integer.</desc>
+<rect width="520" height="790" rx="20" fill="#123440"/>
+<text x="32" y="42" fill="#f6c58d" font-size="15" letter-spacing="2" font-weight="700" font-family="sans-serif">PARAMETER SPACE</text>
+<text x="32" y="79" fill="#f8f3e7" font-size="25" font-family="Georgia,serif">The open triangle</text>
+<path d="M95 432 L425 432 L95 158 Z" fill="#2d6467" fill-opacity=".7" stroke="#9bcfc4" stroke-width="2.6"/>
+<path d="M95 457 V145 M68 432 H443" fill="none" stroke="#b8d5d1" stroke-width="2.4"/>
+<path d="M87 155 L95 145 L103 155 M433 424 L443 432 L433 440" fill="none" stroke="#b8d5d1" stroke-width="2.4"/>
+<path d="M95 432 L260 295" stroke="#f8bb80" stroke-width="5" stroke-linecap="round"/>
+<g fill="#f4f6ee" font-family="sans-serif" font-size="19">
+<text x="76" y="462">0</text><text x="417" y="463">1</text><text x="64" y="166">1</text>
+<text x="259" y="490" text-anchor="middle" font-style="italic">α</text>
+<text x="45" y="296" font-style="italic">β</text>
+</g>
+<text x="290" y="238" fill="#f9c791" font-family="sans-serif" font-size="21" font-weight="700">β = α</text>
+<text x="289" y="262" fill="#f4d9b5" font-family="sans-serif" font-size="15">hollow resonance</text>
+<path d="M280 271 L252 302" stroke="#f3bf89" fill="none" stroke-width="1.5"/>
+<rect x="30" y="515" width="460" height="99" rx="12" fill="#1c4a52" stroke="#56837f"/>
+<text x="49" y="546" fill="#f6c78f" font-family="sans-serif" font-size="14" font-weight="700" letter-spacing="1">INTERIOR CONDITIONS</text>
+<text x="49" y="585" fill="#f4f8ed" font-family="Georgia,serif" font-size="23">α &gt; 0  ·  β &gt; 0  ·  α + β &lt; 1</text>
+<rect x="30" y="635" width="460" height="119" rx="12" fill="#f9f3e9"/>
+<text x="49" y="668" fill="#23515b" font-family="sans-serif" font-size="15" font-weight="700" letter-spacing="1">EXACT SINGULARITY</text>
+<text x="49" y="713" fill="#1e4653" font-family="Georgia,serif" font-size="27">Nα − β ∈ ℤ</text>
+<text x="49" y="741" fill="#657b7d" font-family="sans-serif" font-size="14">An affine arithmetic condition</text>
+</svg>
